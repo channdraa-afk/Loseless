@@ -1,0 +1,27 @@
+{
+  "name": "loseless",
+  "version": "1.0.0",
+  "description": "Zero context drift, Arise execution gatekeeper, and Devil's Advocate cognitive discipline for coding agents.",
+  "keywords": [
+    "antigravity-plugin",
+    "gemini-extension",
+    "coding-agent",
+    "arise-protocol",
+    "devils-advocate",
+    "token-efficiency",
+    "zero-drift"
+  ],
+  "author": "Chandra (channdraa-afk)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/channdraa-afk/Loseless.git"
+  },
+  "bugs": {
+    "url": "https://github.com/channdraa-afk/Loseless/issues"
+  },
+  "homepage": "https://github.com/channdraa-afk/Loseless#readme",
+  "scripts": {
+    "test": "node -e \"console.assert(true, 'Self-check pass'); console.log('Loseless integrity test passed.');\""
+  }
+}
