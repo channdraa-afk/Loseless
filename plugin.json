@@ -1,0 +1,13 @@
+{
+  "name": "loseless",
+  "description": "Strict cognitive discipline & execution protocol for coding agents: Arise Protocol, Mandatory Devil's Advocate, Dual Cognitive Modes, and Zero Context Drift.",
+  "version": "1.0.0",
+  "author": "Chandra (channdraa-afk)",
+  "repository": "https://github.com/channdraa-afk/Loseless",
+  "license": "MIT",
+  "suggestedPrompts": [
+    "Aktifkan mode loseless cold untuk audit bug kritis",
+    "Uji kritis ide arsitektur ini dengan devil's advocate",
+    "Pindai utang teknis codebase dengan /loseless debt"
+  ]
+}

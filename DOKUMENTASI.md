@@ -60,3 +60,6 @@ c:\My Project\Loseless\
 - [x] Inisiasi Fondasi Loseless Plugin:
   - **Problem**: AI coding assistants sering menderita *eager vandalism* (merusak kode sebelum paham konteks utuh), *sycophancy* (menjadi Yes-Man bagi ide buruk), dan *context drift* di percakapan panjang.
   - **Solution / State**: Menginisialisasi repositori resmi `Loseless` di `https://github.com/channdraa-afk/Loseless.git` dengan struktur plugin resmi Antigravity & Gemini.
+- [x] Manifest & Rules Engine v1:
+  - **Problem**: Agen membutuhkan panduan prompt selalu-aktif (*always-on context*) dan manifest yang dikenali oleh Antigravity dan Gemini CLI.
+  - **Solution / State**: Mengimplementasikan `plugin.json`, `gemini-extension.json`, dan `rules/AGENTS.md` (48 baris padat mencakup Arise, Devil's Advocate, Root-Cause, Runnable Assert, Debt Tagging, dan Fluff Purge).
