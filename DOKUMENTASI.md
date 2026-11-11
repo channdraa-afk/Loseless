@@ -66,3 +66,6 @@ c:\My Project\Loseless\
 - [x] Implementasi Bundel Skills:
   - **Problem**: Pengguna membutuhkan komando eksplisit untuk switching suhu kognitif, pemindaian utang teknis otomatis, review devil's advocate, dan penegakan gerbang protokol Arise.
   - **Solution / State**: Mengimplementasikan 4 spesifikasi skill berstandar Antigravity: `skills/loseless/`, `skills/loseless-debt/`, `skills/loseless-critique/`, dan `skills/loseless-arise/`.
+- [x] Dokumentasi Publik & Visual Identity:
+  - **Problem**: Repositori open-source membutuhkan representasi README publik berstandar tinggi, lisensi MIT resmi, logo vektor SVG mandiri, dan bebas kebocoran path lokal.
+  - **Solution / State**: Mengimplementasikan `README.md`, `LICENSE` (MIT), dan `assets/logo.svg`.
