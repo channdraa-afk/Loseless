@@ -63,3 +63,6 @@ c:\My Project\Loseless\
 - [x] Manifest & Rules Engine v1:
   - **Problem**: Agen membutuhkan panduan prompt selalu-aktif (*always-on context*) dan manifest yang dikenali oleh Antigravity dan Gemini CLI.
   - **Solution / State**: Mengimplementasikan `plugin.json`, `gemini-extension.json`, dan `rules/AGENTS.md` (48 baris padat mencakup Arise, Devil's Advocate, Root-Cause, Runnable Assert, Debt Tagging, dan Fluff Purge).
+- [x] Implementasi Bundel Skills:
+  - **Problem**: Pengguna membutuhkan komando eksplisit untuk switching suhu kognitif, pemindaian utang teknis otomatis, review devil's advocate, dan penegakan gerbang protokol Arise.
+  - **Solution / State**: Mengimplementasikan 4 spesifikasi skill berstandar Antigravity: `skills/loseless/`, `skills/loseless-debt/`, `skills/loseless-critique/`, dan `skills/loseless-arise/`.
