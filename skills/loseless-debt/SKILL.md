@@ -2,8 +2,8 @@
 name: loseless-debt
 description: >
   Scans the entire repository for 'lossless:' comment tags and compiles an
-  actionable Technical Debt Ledger. Use when assessing shortcuts taken during
-  rapid development, evaluating refactoring priorities, or preparing for production.
+  actionable Technical Debt Ledger via the bundled CLI tool or regex. Use when
+  assessing shortcuts taken during rapid development or evaluating refactoring.
 license: MIT
 ---
 
@@ -21,24 +21,20 @@ Or in Python/Shell/YAML:
 # lossless: [ceiling: O(N) linear search] -> upgrade: [use binary search or hash index if len > 1000]
 ```
 
-## Scanner Workflow
-When invoked (via `/loseless-debt` or "scan technical debt"):
-1. Grep the workspace for `lossless:` (case-insensitive across `.ts`, `.js`, `.py`, `.go`, `.rs`, `.sql`, etc.).
-2. Ignore vendor folders (`node_modules`, `dist`, `.git`, `vendor`).
-3. Parse each finding into:
-   - **File & Line**: Clickable link to source.
-   - **Ceiling / Constraint**: The operational limit of the current shortcut.
-   - **Upgrade Path**: The exact recommended architecture when the ceiling is reached.
-4. Output a clean Markdown table summarizing total debt items and highest priority bottlenecks.
-
-## Output Format
-```markdown
-### 📋 Loseless Technical Debt Ledger
-
-| Priority | Location | Ceiling / Constraint | Upgrade Path |
-| :--- | :--- | :--- | :--- |
-| 🔴 High | `src/auth.ts:42` | Global mutex lock | Partition by account ID |
-| 🟡 Medium | `src/cache.ts:18` | In-memory Map | Redis with TTL eviction |
-
-*Total Debt Items Found: 2. Zero undocumented hacks detected.*
+## CLI Scanner Tool
+The repository includes a standalone zero-dependency CLI scanner:
+```bash
+npm run debt
+# or directly:
+node scripts/debt-scanner.js [optional target directory]
 ```
+
+## Scanner Workflow
+When invoked (via `/loseless-debt` or "scan technical debt" or `npm run debt`):
+1. Recursively scans the workspace for `lossless:` across all major language extensions.
+2. Automatically skips `node_modules`, `dist`, `.git`, `.cache`, `coverage`.
+3. Parses each finding into:
+   - **File & Line**: Source location.
+   - **Ceiling / Constraint**: The operational capacity limit.
+   - **Upgrade Path**: The exact recommended architectural upgrade.
+4. Outputs an actionable summary table and operational ceiling metrics.

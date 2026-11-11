@@ -69,3 +69,6 @@ c:\My Project\Loseless\
 - [x] Dokumentasi Publik & Visual Identity:
   - **Problem**: Repositori open-source membutuhkan representasi README publik berstandar tinggi, lisensi MIT resmi, logo vektor SVG mandiri, dan bebas kebocoran path lokal.
   - **Solution / State**: Mengimplementasikan `README.md`, `LICENSE` (MIT), dan `assets/logo.svg`.
+- [x] Debt Scanner CLI, Semantic Entropy Router & Anti-Slop Engine:
+  - **Problem**: Kebutuhan scanner utang teknis otomatis tanpa dependensi luar, router suhu kognitif dinamis (Cold vs Warm auto-sensing), dan pemusnah bahasa klise (AI slop).
+  - **Solution / State**: Mengimplementasikan `scripts/debt-scanner.js` (`npm run debt`), memperbarui `rules/AGENTS.md` dengan 3 Hukum Rekayasa Bahasa (Hukum Metrik, Primitif, Realita) serta router semantik otomatis.
