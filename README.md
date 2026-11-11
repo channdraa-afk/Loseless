@@ -1,127 +1,138 @@
 <p align="center">
-  <img src="assets/logo.svg" width="128" height="128" alt="Loseless Logo" />
+  <img src="assets/logo.svg" width="120" height="120" alt="Loseless Logo" />
 </p>
 
 <h1 align="center">Loseless</h1>
 
 <p align="center">
-  <strong>Zero Context Drift. Anti-Sycophancy. Ruthless Root-Cause Discipline for Coding Agents.</strong>
+  <strong>Zero Context Drift. Anti-Sycophancy. Strict Cognitive Discipline for Coding Agents.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/channdraa-afk/Loseless/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-emerald.svg" alt="License MIT" /></a>
-  <a href="https://github.com/channdraa-afk/Loseless"><img src="https://img.shields.io/badge/ecosystem-Gemini%20%7C%20Antigravity-blue.svg" alt="Ecosystem" /></a>
-  <a href="https://github.com/channdraa-afk/Loseless"><img src="https://img.shields.io/badge/discipline-Strict%20Protocol-green.svg" alt="Strict Protocol" /></a>
+  <a href="https://github.com/channdraa-afk/Loseless/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-10b981.svg" alt="License MIT" /></a>
+  <a href="https://github.com/channdraa-afk/Loseless"><img src="https://img.shields.io/badge/ecosystem-Gemini%20%7C%20Antigravity-38bdf8.svg" alt="Ecosystem" /></a>
+  <a href="https://github.com/channdraa-afk/Loseless"><img src="https://img.shields.io/badge/discipline-Strict%20Protocol-059669.svg" alt="Strict Protocol" /></a>
 </p>
 
 ---
 
-## ⚡ What is Loseless?
+## Overview
 
-Most AI coding assistants suffer from three chronic failure modes:
-1. **Eager Vandalism**: Editing or generating code before reading the full call tree or confirming architecture.
-2. **AI Sycophancy ("Yes-Man" syndrome)**: Blindly agreeing with flawed designs, validating anti-patterns, and piling on technical debt.
-3. **Context Drift & Premature Done**: Forgetting critical constraints mid-session and prematurely declaring tasks "Done" while background tasks or builds are still broken.
+Modern AI coding assistants frequently degrade under extended development sessions, manifesting three systemic failure modes:
 
-**Loseless** is a battle-hardened cognitive discipline and execution gatekeeper plugin built natively for the **Google / Gemini & Antigravity** agent ecosystem. It enforces mathematical signal fidelity, radical engineering truthfulness, and root-cause verification.
+1. **Eager Vandalism**: Writing, refactoring, or generating code before analyzing dependency graphs, tracing call paths, or securing human approval.
+2. **Agent Sycophancy**: Uncritically validating architectural anti-patterns, agreeing with fragile suggestions, and accumulating invisible technical debt.
+3. **Context Drift & Premature Completion**: Losing instruction fidelity across lengthy context windows and declaring tasks complete while background compilations or edge cases remain unverified.
+
+**Loseless** is a deterministic cognitive discipline and execution gatekeeper plugin engineered natively for the **Google Gemini & Antigravity** agent runtime. It maximizes signal-to-noise ratio, enforces rigorous root-cause investigation, and replaces sycophantic validation with empirical truthfulness.
 
 ---
 
-## 💎 Core Architectural Pillars
+## Architectural Principles
 
-### 1. ⚔️ The Arise Protocol (Anti-Eager Vandalism)
-Before editing a single byte of your codebase:
-- **Phase 1 (Discovery & Planning)**: Strictly read-only. The agent investigates caller trees, identifies architectural trade-offs, and presents an actionable plan. Then it **STOPS TOTAL**.
-- **Phase 2 (Verified Execution)**: Code execution is locked behind an exact authorization keyword: **`Arise`**.
-- **Zero Premature Done**: A task is never marked finished until builds and unit checks verify 100% clean with zero hanging background processes.
+### 1. The Arise Protocol (Execution Gatekeeping)
 
-### 2. 😈 Mandatory Devil's Advocate (The Anti-Yes-Man Engine)
-No more uncritical agreement. If a proposal introduces a single point of failure (SPOF) or memory leaks, Loseless forces a 2-line **Reality Check** upfront:
-```text
-⚠️ Reality Check: In-memory hash map will OOM when tenant records exceed 50k.
-💡 Minimal Alternative: Stream chunks via PostgreSQL cursor; standard library handles backpressure natively.
-```
+Before modifying any source file in the repository, the agent adheres to an immutable two-phase state machine:
 
-### 3. 🎯 Root-Cause Convergence (Anti-Symptom Patching)
-A bug report is a symptom, not the root cause.
-- Loseless forbids adding band-aids to the single caller that crashed.
-- It greps every caller across the codebase and fixes the issue once at the shared convergence point.
+- **Phase 1 (Discovery & Analysis)**: Strictly read-only. The agent investigates caller trees, surfaces architectural trade-offs, formulates an execution plan, and stops unconditionally.
+- **Phase 2 (Verified Execution)**: Code generation remains locked until the user provides the exact authorization token: `Arise`.
+- **Anti-Premature Completion**: A task is never marked finished while tests, linters, or background subprocesses are running. Verified status requires zero errors and zero dangling tasks.
 
-### 4. 🏷️ Technical Debt Ledger (`/loseless debt`)
-Deliberate shortcuts are never hidden. Any intentional trade-off must leave an explicit debt tag:
+### 2. Mandatory Devil's Advocate (The Anti-Sycophancy Engine)
+
+Generic assistants default to agreeable confirmation. Loseless mandates an upfront architectural critique whenever evaluating proposals:
+
+> **Reality Check**: In-memory hash maps without eviction policies will trigger Out-Of-Memory (OOM) faults once tenant volume scales.  
+> **Minimal Alternative**: Stream data via database cursors; let native engine backpressure govern resource allocation.
+
+### 3. Root-Cause Convergence (No Symptom Patching)
+
+A bug ticket reports a symptom, not the root cause.
+- Loseless explicitly forbids adding defensive guards to the single caller that crashed.
+- The engine greps the entire dependency hierarchy and implements one definitive guard at the shared origin, eliminating bugs across all sibling paths simultaneously.
+
+### 4. Explicit Technical Debt Tracking
+
+Deliberate simplifications are never concealed. Any calculated trade-off must declare its constraints using the standardized tag:
+
 ```typescript
 // lossless: [ceiling: 100 req/sec] -> upgrade: [introduce Redis stream when latency spikes]
 ```
-Run `/loseless-debt` anytime to scan your entire repository and generate an actionable Technical Debt Ledger.
 
-### 5. 🧪 Zero-Framework Runnable Assert
-Non-trivial logic leaves behind **one runnable self-check assert** using the language's native capabilities (`console.assert()`, `assert ...`). Zero bulky test frameworks required for verifying core logic.
+Run `/loseless-debt` at any point to compile an actionable Technical Debt Ledger across the codebase.
 
-### 6. 🤐 Fluff Purge & High Signal-to-Noise Ratio (SNR)
-Eliminates robotic AI filler phrases. Puts actionable code and diffs at the very top. Saves token overhead and preserves attention span across lengthy sessions.
+### 5. Zero-Framework Self-Checking Assertions
+
+Complex business logic must leave behind an inline, runnable assertion check using platform-native capabilities (`console.assert()`, standard `assert`). No external test framework scaffolding is required for baseline mathematical verification.
+
+### 6. Signal-to-Noise Ratio (SNR) Maximization
+
+Eliminates conversational filler, redundant preambles, and generic apologies. Actions, diffs, and diagnostics occupy the highest priority in the response stream.
 
 ---
 
-## 🥊 Architecture Matrix
+## Architecture Matrix
 
-| Capability | Generic Coding Assistant | Loseless Plugin Architecture |
+| Dimension | Generic Coding Assistants | Loseless Plugin Architecture |
 | :--- | :--- | :--- |
-| **Execution Safety** | Modifies files on first impulse | **Two-Phase Arise Gatekeeper (Read-Only until approved)** |
-| **Architectural Review** | Sycophantic praise / Yes-Man | **Mandatory Devil's Advocate Reality Check** |
-| **Cognitive Temperature** | Fixed default temperature | **Dual Modes: Cold (Deterministic) vs Warm (Creative)** |
-| **Debt Accountability** | Hidden unrecorded shortcuts | **Structured `lossless:` scanner & ledger** |
-| **Bug Fixing** | Shallow patch on caller | **Root-Cause Convergence (Fix at origin)** |
-| **Verification Gate** | Premature Done assertions | **Zero hanging tasks, 100% verified status** |
+| **Execution Safety** | Eager file modification on initial prompt | **Two-Phase Arise Gatekeeper (Read-Only until approved)** |
+| **Architectural Review** | Sycophantic agreement | **Mandatory Devil's Advocate Reality Check** |
+| **Cognitive Entropy** | Static, arbitrary randomness | **Dual Mental Temperature (Cold Precision vs. Warm Ideation)** |
+| **Technical Debt** | Untracked, implicit shortcuts | **Structured `lossless:` scanner & automated ledger** |
+| **Defect Remediation** | Shallow patch applied to reporting caller | **Root-Cause Convergence (Fixed at the architectural root)** |
+| **Completion Criteria** | Speculative or premature status claims | **Strict zero-dangling verification** |
 
 ---
 
-## 🚀 Quick Start
+## Getting Started
 
 ### Installation
 
-Clone into your local plugins directory:
+Clone directly into the local Antigravity/Gemini plugins configuration:
+
 ```bash
 git clone https://github.com/channdraa-afk/Loseless.git ~/.gemini/config/plugins/loseless
 ```
 
-Or reference within an Antigravity workspace:
+Alternatively, register within an Antigravity workspace manifest:
+
 ```json
 {
   "plugins": ["loseless"]
 }
 ```
 
-### Slash Commands & Skills
+### Command Reference
 
-| Command | Description |
+| Command | Purpose |
 | :--- | :--- |
-| `/loseless cold` | Activates zero-entropy, deterministic root-cause mode (Default). |
-| `/loseless warm` | Activates divergent, high-creativity brainstorming mode. |
-| `/loseless-debt` | Scans workspace for `// lossless:` tags and outputs the Technical Debt Ledger. |
-| `/loseless-critique` | Triggers a one-shot Devil's Advocate architectural audit on your current code. |
+| `/loseless cold` | Engages zero-entropy, deterministic root-cause mode (Default). |
+| `/loseless warm` | Engages divergent, creative architectural exploration mode. |
+| `/loseless-debt` | Scans workspace for `// lossless:` annotations and generates the Technical Debt Ledger. |
+| `/loseless-critique` | Triggers a one-shot Devil's Advocate architectural audit on proposed code. |
 
 ---
 
-## 🏛️ Repository Layout
+## Repository Structure
 
 ```text
 loseless/
 ├── plugin.json               # Antigravity Plugin manifest
 ├── gemini-extension.json     # Gemini CLI extension manifest
-├── package.json              # NPM metadata
+├── package.json              # NPM package metadata & self-check script
 ├── rules/
 │   └── AGENTS.md             # Always-on context rules (< 50 lines)
 ├── skills/
-│   ├── loseless/SKILL.md     # Mental temperature switcher
+│   ├── loseless/SKILL.md     # Cognitive temperature regulator
 │   ├── loseless-debt/SKILL.md # Technical debt harvester
-│   ├── loseless-critique/SKILL.md # Devil's advocate reviewer
+│   ├── loseless-critique/SKILL.md # Devil's advocate review engine
 │   └── loseless-arise/SKILL.md # Two-phase execution gatekeeper
 └── assets/
-    └── logo.svg              # Vector brand mark
+    └── logo.svg              # Brand vector mark
 ```
 
 ---
 
-## 📜 License
+## License
 
-Distributed under the [MIT License](LICENSE). Built with precision by [Chandra](https://github.com/channdraa-afk).
+Distributed under the [MIT License](LICENSE). Engineered with precision by [Chandra](https://github.com/channdraa-afk).
