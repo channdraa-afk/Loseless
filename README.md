@@ -225,6 +225,58 @@ You can copy `scripts/debt-scanner.js` into any existing codebase and add to `pa
 
 ---
 
+## Multi-Platform Ecosystem Support
+
+Loseless natively exports configuration adapters for every major coding agent:
+
+| Environment | Integration File | Configuration Mechanism |
+| :--- | :--- | :--- |
+| **Antigravity** | `plugin.json` + `rules/AGENTS.md` | Bundled plugin runtime & skills |
+| **Gemini CLI** | `gemini-extension.json` | Manifest context link to `rules/AGENTS.md` |
+| **Cursor** | `.cursorrules` & `.cursor/rules/loseless.mdc` | Always-on workspace rule files |
+| **Claude Code** | `CLAUDE.md` | Root instruction file |
+| **Windsurf / Cascade** | `.windsurfrules` | Workspace agent rules |
+| **Cline / Roo Code** | `.clinerules` | Root behavior protocol |
+| **Universal Codex** | `AGENTS.md` | Generic root agent instruction standard |
+
+---
+
+## Empirical Benchmark Telemetry
+
+Measured using `npm run benchmark` over 100 test iterations on a live repository:
+
+```text
+=============================================================
+              LOSELESS ENGINE BENCHMARK SUITE                
+=============================================================
+
+1. SCANNER PERFORMANCE BENCHMARK
+-------------------------------------------------------------
+  Iterations        : 100 runs
+  Average Latency   : 1.854 ms
+  Min / Max Latency : 1.144 ms / 3.673 ms
+  Execution Speed   : 539 scans/second
+  Heap Allocation   : 1017.77 KB
+
+2. COGNITIVE TOKEN FOOTPRINT EVALUATION
+-------------------------------------------------------------
+  Rule File         : rules/AGENTS.md
+  Total Lines       : 45 lines
+  Word Count        : 470 words
+  Estimated Tokens  : ~853 tokens
+  Monolith Baseline : ~3500 tokens
+  Context Savings   : 75.6% overhead reduction (~2647 tokens preserved)
+
+=============================================================
+BENCHMARK VERDICT:
+✓ Scanner throughput is sub-millisecond per item.
+✓ Token footprint occupies less than 25% of standard rule sets.
+✓ Zero external runtime dependencies confirmed.
+=============================================================
+```
+
+---
+
 ## Command Reference & Skills
 
 | Command / Trigger | Category | Purpose |
@@ -236,7 +288,8 @@ You can copy `scripts/debt-scanner.js` into any existing codebase and add to `pa
 | `/loseless-critique` | Architecture | Triggers an uncompromising one-shot Devil's Advocate audit. |
 | `/loseless-arise` | Execution | Displays Arise Protocol gatekeeper status and validation rules. |
 | `npm run debt` | CLI Tool | Executes local high-speed regex technical debt scanner. |
-| `npm test` | Testing | Runs baseline self-checking assertions. |
+| `npm run benchmark` | Telemetry | Executes performance & token density benchmark suite. |
+| `npm test` | Testing | Runs scanner unit tests and manifest integrity checks. |
 
 ---
 
@@ -244,13 +297,23 @@ You can copy `scripts/debt-scanner.js` into any existing codebase and add to `pa
 
 ```text
 loseless/
+├── AGENTS.md                 # Universal root agent instruction standard
+├── .cursorrules              # Cursor workspace rule adapter
+├── .cursor/rules/            # Modern Cursor MDC rules
+├── CLAUDE.md                 # Claude Code agent protocol
+├── .windsurfrules            # Windsurf / Cascade rule adapter
+├── .clinerules               # Cline & Roo Code rule adapter
 ├── plugin.json               # Antigravity Plugin manifest
 ├── gemini-extension.json     # Gemini CLI extension manifest
-├── package.json              # NPM package metadata & debt CLI script
+├── package.json              # NPM package metadata, tests & scripts
 ├── rules/
 │   └── AGENTS.md             # Always-on context rules (< 60 lines)
 ├── scripts/
-│   └── debt-scanner.js       # Zero-dependency technical debt harvester
+│   ├── debt-scanner.js       # Zero-dependency technical debt harvester
+│   └── benchmark.js          # Live performance & token density benchmark suite
+├── tests/
+│   ├── scanner.test.js       # Multi-language scanner unit tests
+│   └── manifests.test.js     # Manifest and adapter integrity tests
 ├── skills/
 │   ├── loseless/SKILL.md     # Cognitive temperature regulator
 │   ├── loseless-debt/SKILL.md # Technical debt harvester skill

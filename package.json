@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/channdraa-afk/Loseless#readme",
   "scripts": {
-    "test": "node -e \"console.assert(true, 'Self-check pass'); console.log('Loseless integrity test passed.');\"",
-    "debt": "node scripts/debt-scanner.js"
+    "test": "node tests/scanner.test.js && node tests/manifests.test.js",
+    "debt": "node scripts/debt-scanner.js",
+    "benchmark": "node scripts/benchmark.js"
   }
 }
