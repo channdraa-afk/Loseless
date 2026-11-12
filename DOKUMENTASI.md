@@ -150,3 +150,9 @@ c:\My Project\Loseless\
     1. *Action-Evident Command Suite*: Menyediakan 6 perintah baru yang intuitif (`/loseless-clean`, `/loseless-trace`, `/loseless-impact`, `/loseless-review`, `/loseless-gate`, `/loseless-help`) berdampingan dengan alias backward-compatibility (`blast`, `critique`, `arise`).
     2. *Deep Security Triage Protocol (`/loseless-trace`)*: Menerapkan 5-Layer Deep Security Triage Engine yang mendikotomikan symptom vs root-cause, memetakan wire HTTP ke kode server/DB, serta menghasilkan 1 runnable proof-of-fix assertion.
     3. *Language Server Sync*: Seluruh 11 skill diverifikasi aktif via gRPC `GetAllPlugins` dan seluruh manifest integrity test suite lulus 100%.
+- [x] Human Mindset Modes Calibration (Engine v1.3.1):
+  - **Problem**: Deskripsi perintah `/loseless` terlalu kriptik ("zero-entropy, deterministic") serta istilah `cold` dan `warm` membingungkan pengguna awam yang tidak familiar dengan terminologi temperatur LLM.
+  - **Solution / State**:
+    1. *Natural Mindset Names*: Mengubah nama mode utama menjadi `focus` (fokus teknik, logika deterministik, anti-halu), `idea` (eksplorasi kreatif & multi-sudut pandang), `auto` (deteksi pintar otomatis), dan `status`, dengan tetap mendukung `cold` dan `warm` sebagai alias backward-compatibility.
+    2. *Actionable Popover Description*: Memperbarui deskripsi `commands/loseless.toml` menjadi `Set AI mindset: /loseless [focus | idea | auto | status]` agar langsung memandu pengguna saat mengetik di antarmuka chat.
+    3. *Visual Badge Standardization*: Menyelaraskan lencana visual mode menjadi `[Cognitive Mode: 🎯 Focus Precision]` dan `[Cognitive Mode: 💡 Idea Exploration]`.
