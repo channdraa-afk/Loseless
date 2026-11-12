@@ -132,3 +132,9 @@ c:\My Project\Loseless\
     2. *Proactive Onboarding Directive*: `hooks/loseless-activate.js` kini otomatis menyuntikkan arahan darurat `PROACTIVE_ONBOARDING_REQUIRED` saat repositori belum memiliki `loseless.config.json`.
     3. *Zero-Turn Axiom*: Aturan `rules/AGENTS.md` mewajibkan agen menyapa dan mengonfirmasi preferensi Arise pengguna pada giliran pertama sebelum memproses instruksi teknis.
     4. *Calibration*: Menyimpan preferensi Chandra ke `loseless.config.json` (`ariseMode: "strict"`, `gateKeyword: "Arise"`).
+- [x] Antigravity Native Discovery & Lifecycle Hooks Resolution (Engine v1.1.3):
+  - **Problem**: UI chat Antigravity tetap menampilkan `No matching results` dan onboarding tidak terpanggil otomatis karena Windows NTFS Junction (`mklink /J`) diabaikan oleh directory walker Go bawaan Language Server (`Lstat()` skipping reparse points), serta ketiadaan `hooks.json` native di root repositori.
+  - **Solution / State**:
+    1. *Resmi Declaration (`plugins.json`)*: Menghapus junction Windows dan mendaftarkan path repositori secara legal via `~/.gemini/config/plugins.json` (`entries: [{"path": "c:/My Project/Loseless"}]`), diverifikasi langsung via gRPC `GetAllPlugins` (status: Loaded, 5 skills aktif).
+    2. *Root Native `hooks.json`*: Menyediakan `hooks.json` resmi di root repositori yang memetakan event `SessionStart`, `PreInvocation`, dan `PreToolUse` ke scripts Node.js di `hooks/`.
+    3. *Antigravity Stdout Contract*: Memperbarui `hooks/loseless-activate.js`, `hooks/loseless-mode-tracker.js`, dan `hooks/loseless-pretool.js` agar mendukung payload JSON standard Antigravity (`injectSteps`, `lastUserInput`, dan `{ decision: 'deny'/'allow' }`) secara mulus berdampingan dengan mode TTY.
