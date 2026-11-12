@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/loseless-activate.js\"",
+            "timeout": 5,
+            "statusMessage": "Activating Loseless cognitive gatekeeper..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/loseless-mode-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "Tracking Loseless Arise gatekeeper state..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/loseless-pretool.js\"",
+            "timeout": 5,
+            "statusMessage": "Verifying Arise authorization token..."
+          }
+        ]
+      }
+    ]
+  }
+}

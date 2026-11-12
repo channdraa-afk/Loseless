@@ -1,5 +1,7 @@
 {
   "gateKeyword": "Arise",
+  "ariseMode": "adaptive",
+  "fastTrackMicroDiffs": true,
   "strictMode": true,
   "cognitiveMode": "auto",
   "autoInjectGatekeeperCard": true

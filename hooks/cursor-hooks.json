@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node \"LOSELESS_DIR/hooks/loseless-activate.js\"",
+        "timeout": 5
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "node \"LOSELESS_DIR/hooks/loseless-mode-tracker.js\"",
+        "timeout": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "node \"LOSELESS_DIR/hooks/loseless-pretool.js\"",
+        "timeout": 5
+      }
+    ]
+  }
+}
