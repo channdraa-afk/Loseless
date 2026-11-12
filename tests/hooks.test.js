@@ -1,6 +1,11 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+
+// Isolate test session from active workspace so tests never pollute production state
+const testSessionDir = path.join(__dirname, '.temp-test-session');
+process.env.LOSELESS_SESSION_DIR = testSessionDir;
+
 const { analyzePrompt, loadSession, saveSession, relockSession, getSessionFilePath } = require('../hooks/loseless-mode-tracker');
 const { checkToolAuthorization } = require('../hooks/loseless-pretool');
 const { activate } = require('../hooks/loseless-activate');
@@ -115,5 +120,22 @@ try {
   assert.strictEqual(res2.phase, 2, 'Session must enter Phase 2');
   console.log('  ✓ Natural language deadline & turbo cues trigger instant bypass');
 }
+
+// Test 12: Auto-relock policy strictly locks subsequent turns and clears bypass
+{
+  const newTurnRes = analyzePrompt('lanjut fitur berikutnya');
+  assert.strictEqual(newTurnRes.action, 'auto_relocked', 'Subsequent turn must auto-relock');
+  assert.strictEqual(newTurnRes.phase, 1, 'Auto-relocked session must be Phase 1');
+  const session = loadSession();
+  assert.strictEqual(session.phase, 1, 'Stored session phase must be 1');
+  assert.strictEqual(session.bypassed, false, 'Bypass flag must be cleared on auto-relock');
+  console.log('  ✓ Auto-relock policy clears bypass and enforces Phase 1 on new turns');
+}
+
+// Cleanup isolated test sandbox
+try {
+  if (fs.existsSync(sessionFile)) fs.unlinkSync(sessionFile);
+  if (fs.existsSync(testSessionDir)) fs.rmdirSync(testSessionDir);
+} catch (e) {}
 
 console.log('All Physical Hooks Tests Passed Successfully.\n');
