@@ -55,6 +55,7 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'claude-codex-hooks.json')), 'claude-codex-hooks.json must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'cursor-hooks.json')), 'cursor-hooks.json must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'sentiment-patterns.json')), 'sentiment-patterns.json must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks.json')), 'Root hooks.json must exist');
 
   // Verify skills
   assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless', 'SKILL.md')), 'skills/loseless must exist');
