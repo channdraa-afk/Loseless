@@ -45,4 +45,19 @@ console.log('Running Loseless Blast-Radius Scanner Test Suite...');
   console.log('  ✓ Edge-case validation verified');
 }
 
+// Test 5: Multi-Language Reference Aggregation (Python, Go, Rust)
+{
+  const fixtureDir = path.join(process.cwd(), 'tests', 'fixtures', 'multilang');
+  const result = calculateBlastRadius('verify_token', fixtureDir);
+  assert.ok(result, 'Result must not be null');
+  assert.strictEqual(result.totalRefs, 6, 'Must detect exactly 6 references across Python, Go, and Rust fixtures');
+  assert.strictEqual(result.languageBreakdown.python, 2, 'Must detect Python references');
+  assert.strictEqual(result.languageBreakdown.go, 2, 'Must detect Go references');
+  assert.strictEqual(result.languageBreakdown.rust, 2, 'Must detect Rust references');
+  assert.ok(result.kindBreakdown.definition >= 1, 'Must detect definition kinds');
+  assert.ok(result.kindBreakdown.import >= 2, 'Must detect import kinds');
+  assert.ok(result.kindBreakdown['call-site'] >= 3, 'Must detect call-site kinds');
+  console.log('  ✓ Multi-language AST reference aggregation verified (Python, Go, Rust)');
+}
+
 console.log('All Blast-Radius Tests Passed Successfully.\n');

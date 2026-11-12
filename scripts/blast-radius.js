@@ -37,9 +37,41 @@ const IGNORED_DIRS = new Set([
 
 const SUPPORTED_EXTENSIONS = new Set([
   '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
-  '.py', '.go', '.rs', '.sql', '.sh', '.bash',
-  '.html', '.css', '.scss', '.yaml', '.yml', '.md'
+  '.py', '.go', '.rs', '.java', '.kt', '.cs', '.cpp', '.c', '.h', '.php', '.rb', '.swift',
+  '.sql', '.sh', '.bash', '.html', '.css', '.scss', '.yaml', '.yml', '.md'
 ]);
+
+const EXT_TO_LANG = {
+  '.js': 'javascript', '.jsx': 'javascript', '.mjs': 'javascript', '.cjs': 'javascript',
+  '.ts': 'typescript', '.tsx': 'typescript',
+  '.py': 'python',
+  '.go': 'go',
+  '.rs': 'rust',
+  '.java': 'java',
+  '.kt': 'kotlin',
+  '.cs': 'csharp',
+  '.cpp': 'cpp', '.c': 'c', '.h': 'c',
+  '.php': 'php',
+  '.rb': 'ruby',
+  '.swift': 'swift',
+  '.sql': 'sql',
+  '.sh': 'shell', '.bash': 'shell'
+};
+
+function detectKind(line, symbol) {
+  const trimmed = line.trim();
+  // Definition patterns across JS/TS, Python, Go, Rust, Java, PHP
+  const defPattern = new RegExp(`(^|\\b)(def|class|function|const|let|var|func|fn|struct|interface|type|enum)\\s+${symbol}\\b`);
+  if (defPattern.test(trimmed)) return 'definition';
+
+  // Import patterns
+  const importPattern = new RegExp(`(^|\\b)(import|from|require|use|include)\\s+.*\\b${symbol}\\b`);
+  if (importPattern.test(trimmed) || trimmed.includes(`require('${symbol}')`) || trimmed.includes(`require("${symbol}")`)) {
+    return 'import';
+  }
+
+  return 'call-site';
+}
 
 function walk(dir, results = []) {
   let list;
@@ -79,6 +111,8 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
   const files = walk(baseDir);
   const references = [];
   const moduleCounts = new Map();
+  const languageCounts = new Map();
+  const kindCounts = new Map([['definition', 0], ['import', 0], ['call-site', 0]]);
 
   // Universal word-boundary lookaround supporting standard words and special prefixes ($, @, #)
   const escaped = targetSymbol.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -92,6 +126,9 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
       continue;
     }
 
+    const ext = path.extname(file).toLowerCase();
+    const lang = EXT_TO_LANG[ext] || 'other';
+
     const lines = content.split('\n');
     lines.forEach((line, index) => {
       // Reset regex index for global regexes
@@ -100,15 +137,20 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
         const relPath = path.relative(baseDir, file).replace(/\\/g, '/');
         const parts = relPath.split('/');
         const topModule = parts.length > 1 ? parts[0] : 'root';
+        const kind = detectKind(line, escaped);
 
         references.push({
           file: relPath,
           line: index + 1,
           module: topModule,
+          language: lang,
+          kind,
           snippet: line.trim()
         });
 
         moduleCounts.set(topModule, (moduleCounts.get(topModule) || 0) + 1);
+        languageCounts.set(lang, (languageCounts.get(lang) || 0) + 1);
+        kindCounts.set(kind, (kindCounts.get(kind) || 0) + 1);
       }
     });
   }
@@ -132,6 +174,8 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
     totalRefs,
     distinctModules,
     moduleBreakdown: Object.fromEntries(moduleCounts),
+    languageBreakdown: Object.fromEntries(languageCounts),
+    kindBreakdown: Object.fromEntries(kindCounts),
     tier,
     tierDescription,
     topReference: references[0] || null,
@@ -155,7 +199,14 @@ function printReport(result) {
     .map(([mod, count]) => `${mod}: ${count}`)
     .join(', ');
 
-  console.log(`Reference Map : ${result.totalRefs} call-site(s) across ${result.distinctModules} module(s) [${breakdownStr || 'none'}]`);
+  const langStr = Object.entries(result.languageBreakdown || {})
+    .map(([lang, count]) => `${lang}: ${count}`)
+    .join(', ');
+
+  console.log(`Reference Map : ${result.totalRefs} reference(s) across ${result.distinctModules} module(s) [${breakdownStr || 'none'}]`);
+  if (langStr) {
+    console.log(`Languages     : ${langStr}`);
+  }
 
   if (result.topReference) {
     console.log(`Primary Root  : ${pc.dim(`${result.topReference.file}:${result.topReference.line}`)}`);
