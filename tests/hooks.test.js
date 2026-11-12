@@ -104,4 +104,16 @@ try {
   console.log('  ✓ Reconciliation loop relocks session to Phase 1');
 }
 
+// Test 11: Natural language deadline & turbo mode cues trigger instant bypass
+{
+  const res1 = analyzePrompt('aku lagi ada deadline tolong beresin');
+  assert.strictEqual(res1.action, 'bypass', 'Deadline urgency must trigger instant bypass');
+  assert.strictEqual(res1.phase, 2, 'Session must enter Phase 2');
+
+  const res2 = analyzePrompt('langsung mode turbo aja');
+  assert.strictEqual(res2.action, 'bypass', 'Turbo mode phrasing must trigger instant bypass');
+  assert.strictEqual(res2.phase, 2, 'Session must enter Phase 2');
+  console.log('  ✓ Natural language deadline & turbo cues trigger instant bypass');
+}
+
 console.log('All Physical Hooks Tests Passed Successfully.\n');
