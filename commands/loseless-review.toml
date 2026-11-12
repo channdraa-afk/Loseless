@@ -1,0 +1,2 @@
+description = "Perform an uncompromising Devil's Advocate architectural review of a proposal or diff"
+prompt = "Conduct a ruthless Devil's Advocate architectural review of: {{args}}. State a 2-line Reality Check upfront naming the single point of failure, memory/resource cost, and failure boundary, followed by the minimal platform-native alternative. Scrutinize concurrency, data integrity, and hidden coupling."

@@ -1,0 +1,2 @@
+description = "Compute blast-radius impact and caller distribution of a symbol before modifying it"
+prompt = "Analyze the blast-radius impact for symbol: {{args}}. Run 'npm run blast-radius -- {{args}}' locally or inspect caller trees. Output a compact 3-line aggregate report: Target Symbol, Blast Tier (Tier 0/1/2), Distribution across modules, Primary Root, and Mandated Safety Gate. Do not dump raw call trees into context."

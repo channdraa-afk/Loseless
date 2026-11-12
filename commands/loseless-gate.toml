@@ -1,0 +1,2 @@
+description = "Inspect or configure the Arise Protocol execution gatekeeper state and token"
+prompt = "Inspect the current Loseless Arise Protocol state. Report the active mode (strict/adaptive/off), current authorization keyword, session lock status, and safety boundaries. If an argument is provided, explain how to configure it in loseless.config.json."
