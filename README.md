@@ -32,6 +32,18 @@ Modern AI coding assistants frequently degrade during extended engineering sessi
 
 ---
 
+## Choose Your Flavor (Architecture Matrix)
+
+Loseless ships in three distinct tiers tailored to your workflow and environment:
+
+| Flavor | Target Platform | Core File | Dependencies | Setup |
+| :--- | :--- | :--- | :--- | :--- |
+| **Loseless Zero** | Cursor, Windsurf, Claude Web, ChatGPT, Ollama | [`AGENTS_LITE.md`](AGENTS_LITE.md) | None (Pure Prompt) | Copy & paste 1 file (< 180 words, ~240 tokens). Zero dependencies. |
+| **Loseless Plugin** | Google Antigravity & Gemini CLI | `hooks.json` + `rules/AGENTS.md` | Antigravity Runtime | Full physical pre-tool hooks, session auto-relock, and 11 UI slash commands. |
+| **Loseless CLI** | Terminal, VS Code, Neovim, CI/CD pipelines | `bin/` & `scripts/` | Node.js >= 18 | Run AST blast-radius, code clean, and debt scanners locally at 0 LLM token cost. |
+
+---
+
 ## Core Architectural Pillars
 
 ### 1. The Arise Protocol & Physical Hook Gatekeeper
@@ -69,11 +81,11 @@ Before modifying any source file in the repository, the agent adheres to an immu
 ```
 
 #### Friction-Aware Adaptive Gatekeeper & Zero-Token Sentiment Radar
-Teams want safety without bureaucratic friction on trivial edits:
+Teams want safety without bureaucratic friction on trivial edits or tight deadlines:
 - **`ariseMode: "adaptive"` (Default)**: In `loseless.config.json`, the engine enables a zero-token local sentiment interceptor (`hooks/sentiment-patterns.json`).
-- If a developer expresses urgency or frustration (*"ngapain pake arise"*, *"cepetan langsung edit"*), the agent intercepts this locally in `< 1ms` at **0 LLM token cost**, suggesting a temporary bypass instead of fighting the user.
+- **Emergency Turbo Bypass**: If a developer expresses urgency or tight deadlines (*"lagi ada deadline"*, *"on a deadline"*, *"mode turbo"*, *"need it fast"*), the agent grants an immediate Phase 2 execution bypass at **0 LLM token cost** without prompting or waiting for `Arise`.
 - **Fast-Track Micro-Diffs**: Pure documentation, styling, or typo edits (< 3 lines non-code) automatically execute with inline diff preview.
-- **Reconciliation Loop**: Once the task is cleanly finalized, the agent gently offers: *"Task completed. Re-enable Arise Protocol to guard subsequent changes?"*
+- **Reconciliation Loop**: Once the task is cleanly finalized (*"makasih"*, *"done"*, *"sip"*), the agent automatically relocks state to Phase 1.
 
 #### Configurable Gate Keyword (`loseless.config.json`)
 ```json
@@ -98,14 +110,14 @@ Unlike prompt-only rules, Loseless ships a native Node.js runtime hook suite:
 
 ---
 
-### 3. Cascading Semantic Entropy Router
+### 3. Cascading Semantic Mindset Router
 
-Loseless automatically analyzes conversational cues and modulates cognitive entropy with deterministic precedence:
+Loseless automatically analyzes conversational cues and modulates cognitive behavior with deterministic precedence:
 
-- **Cascading Precedence**: When prompts contain colliding intents (e.g. *"give me ideas to fix this memory leak and refactor"*), **Cold Triage always precedes Warm Ideation**.
-  $$\text{Level 1: Cold (Bug Triage \& Root Cause)} \longrightarrow \text{Level 2: Warm (Solution Spectrum)} \longrightarrow \text{Level 3: Strict (Minimal Diff Execution)}$$
-- **Cold Precision Mode (`[Cognitive Mode: ❄️ Cold Precision]`)**: Mental temperature ~0.1, deterministic logic, zero conversational filler, first-principles deduction.
-- **Warm Ideation Mode (`[Cognitive Mode: 🔥 Warm Ideation]`)**: Mental temperature ~0.8, high divergence, explores 3 distinct structural perspectives without premature refutation.
+- **Cascading Precedence**: When prompts contain colliding intents (e.g. *"give me ideas to fix this memory leak"*), **Focus triage always precedes Idea exploration**.
+  $$\text{Level 1: Focus (Bug Triage \& Root Cause)} \longrightarrow \text{Level 2: Idea (Solution Spectrum)} \longrightarrow \text{Level 3: Strict (Parsimonious Diff Execution)}$$
+- **Focus Precision Mode (`[Cognitive Mode: Focus Precision]`)**: Deterministic first-principles logic, zero fluff, root-cause isolation upfront (`/loseless focus`).
+- **Idea Exploration Mode (`[Cognitive Mode: Idea Exploration]`)**: Explores 3 distinct architectural angles without premature refutation (`/loseless idea`).
 
 ---
 
@@ -131,9 +143,9 @@ Generic assistants create warning fatigue by attaching verbose theoretical discl
 
 ---
 
-### 6. Monorepo Scale & Blast-Radius CLI Offloader
+### 6. Monorepo Scale & Multi-Language Blast-Radius CLI Offloader
 
-To prevent LLM context exhaustion on large repositories, Loseless offloads AST reference searches to a dedicated CLI tool:
+To prevent LLM context exhaustion on large repositories, Loseless offloads cross-language AST reference searches to a dedicated local CLI tool supporting JavaScript, TypeScript, Python, Go, Rust, Java, C++, PHP, and Shell:
 
 ```bash
 npm run blast-radius -- <symbolOrFunction>
@@ -144,7 +156,8 @@ npm run blast-radius -- <symbolOrFunction>
 === LOSELESS BLAST-RADIUS IMPACT TELEMETRY ===
 Target Symbol : authenticateUser
 Blast Tier    : Tier 2 — Systemic Impact (Cross-Module or Critical Invariant)
-Reference Map : 24 call-site(s) across 3 module(s) [auth: 14, router: 7, api: 3]
+Reference Map : 24 reference(s) across 3 module(s) [auth: 14, router: 7, api: 3]
+Languages     : typescript: 18, python: 4, go: 2
 Primary Root  : src/auth/jwt.ts:42
 Action Gate   : Mandates Full SPOF, Rollback Strategy, and Strict Arise Execution Gate.
 ```

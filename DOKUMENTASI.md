@@ -155,4 +155,12 @@ c:\My Project\Loseless\
   - **Solution / State**:
     1. *Natural Mindset Names*: Mengubah nama mode utama menjadi `focus` (fokus teknik, logika deterministik, anti-halu), `idea` (eksplorasi kreatif & multi-sudut pandang), `auto` (deteksi pintar otomatis), dan `status`, dengan tetap mendukung `cold` dan `warm` sebagai alias backward-compatibility.
     2. *Actionable Popover Description*: Memperbarui deskripsi `commands/loseless.toml` menjadi `Set AI mindset: /loseless [focus | idea | auto | status]` agar langsung memandu pengguna saat mengetik di antarmuka chat.
-    3. *Visual Badge Standardization*: Menyelaraskan lencana visual mode menjadi `[Cognitive Mode: 🎯 Focus Precision]` dan `[Cognitive Mode: 💡 Idea Exploration]`.
+    3. *Visual Badge Standardization*: Menyelaraskan lencana visual mode menjadi `[Cognitive Mode: Focus Precision]` dan `[Cognitive Mode: Idea Exploration]`.
+- [x] Multi-Tier Flavors, Multi-Language AST & Zero-Slop Hardening (Engine v1.4.0):
+  - **Problem**: Keterbatasan Loseless pada ekosistem ber-Node.js saja, kelelahan birokrasi kata kunci Arise saat menghadapi deadline mendesak, overhead token prompt (~1.000 token) dengan spam emoji dekoratif, dan keterbatasan scanner blast-radius yang baru mendukung JS/TS.
+  - **Solution / State**:
+    1. *Loseless Zero (`AGENTS_LITE.md`)*: Menyediakan edisi murni prompt satu file (< 180 kata, ~240 token) siap pakai tanpa dependensi untuk Cursor, Claude Web, ChatGPT, dan Ollama.
+    2. *Emergency Turbo Bypass*: Menambahkan kamus deteksi frasa alami urgensi ("lagi ada deadline", "on a deadline", "mode turbo", "need it fast", "mau cepet") di `hooks/sentiment-patterns.json` yang langsung membuka gerbang eksekusi Fase 2 tanpa minta kata kunci Arise, dan mengunci kembali secara otomatis saat tugas tuntas.
+    3. *Zero-Slop Prompt Compression*: Mengompresi `rules/AGENTS.md` menjadi < 830 token, melarang keras emoji dekoratif yang tidak fungsional, serta menegakkan format jawaban padat data.
+    4. *Multi-Language AST Reference Scanner*: Memperluas `scripts/blast-radius.js` untuk mendeteksi referensi lintas berkas di Python, Go, Rust, Java, C++, PHP, dan Shell dengan pemilahan jenis (definition, import, call-site).
+    5. *Multi-Tier Compatibility Matrix*: Menambahkan panduan pemilihan flavor yang jelas di `README.md`. Test suite lengkap (Scanner, Manifests, Hooks, Blast-Radius) lulus 100%.
