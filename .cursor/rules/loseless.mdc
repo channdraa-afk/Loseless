@@ -1,5 +1,5 @@
 ---
-description: Loseless strict execution protocol, anti-sycophancy, and root-cause engineering
+description: Loseless strict execution protocol, anti-sycophancy, blast-radius tracing, and root-cause engineering
 globs: *
 alwaysApply: true
 ---
@@ -11,6 +11,8 @@ Always enforce the rules defined in `AGENTS.md`:
 - **Arise Protocol**: Read-only planning first. Never edit or write files until the user explicitly inputs `Arise`.
 - **Reality Check**: Provide an upfront 2-line Reality Check addressing Single Points of Failure and memory boundaries before writing code.
 - **Root-Cause Convergence**: Grep caller hierarchy. Never patch the reporting caller if the bug stems from a shared origin.
+- **Blast-Radius Tracing**: Grep downstream callers before changing shared functions. Execute atomic refactoring across all affected consumers.
+- **Banned False Certainty**: Ban deceptive claims of 100% bug-free perfection. Disclose residual risks and uncovered boundary edge cases.
 - **Runnable Assert**: Include 1 inline self-checking assertion using standard library primitives for non-trivial logic.
 - **Technical Debt**: Tag intentional simplifications as `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`.
 - **Anti-Slop Engine**: Replace fluff with exact metrics (`ms`, `req/s`, `MB`) and physical primitives (`socket`, `heap`, `disk`).

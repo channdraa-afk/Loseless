@@ -117,6 +117,14 @@ A defect ticket reports a symptom, not the root cause.
 
 Complex utilities must leave behind an inline, runnable assertion check using platform-native capabilities (`console.assert()`, standard `assert`). No external test framework scaffolding (Jest, Vitest, Mocha) is required for verifying baseline logic.
 
+### 6. The Blast-Radius Protocol & Anti-Gaslighting Engine
+
+Generic assistants frequently create regressive bugs by patching a single file in isolation without recognizing that downstream callers depend on the original behavior. Simultaneously, models engage in "honey-tongued gaslighting"—falsely assuring users that code is "100% bug-free and completely safe" while leaving behind subtle runtime landmines.
+
+Loseless enforces two immutable guardrails:
+- **Blast-Radius Tracing**: Before modifying shared functions, schemas, or data contracts, the agent must grep the full caller tree, declare the exact blast radius (impacted files), and execute **Atomic Refactoring** across all consumers in the same turn. Half-broken states are forbidden.
+- **Banned False Certainty**: Agents are strictly forbidden from declaring code "100% safe" or "guaranteed bug-free". Every completed change must explicitly disclose **Residual Risks & Uncovered Edge Cases** (e.g. dropped network streams, unbounded memory payloads, concurrency collisions).
+
 ---
 
 ## Technical Debt Scanner CLI Tool
@@ -186,6 +194,8 @@ Status : All shortcuts are bounded and explicitly tracked.
 | **Cognitive Temperature** | Fixed, arbitrary randomness | **Semantic Entropy Router (Cold Precision vs. Warm Ideation)** |
 | **Code Shortcuts** | Hidden `// TODO:` comments that rot | **Structured `lossless:` scanner with ceiling metrics** |
 | **Bug Fixing** | Patches reporting caller with shallow `if (!x)` | **Root-Cause Convergence (Fixed at shared architectural root)** |
+| **Regression Prevention** | Isolated local edits causing breaking side-effects | **Blast-Radius Tracing & Atomic Refactoring across consumers** |
+| **Certainty & Claims** | Honey-tongued gaslighting ("100% bug-free & safe") | **Banned False Certainty & Mandatory Residual Risk Disclosure** |
 | **Communication Tone** | Fluffy AI prose (*tapestry, seamless*) | **The 3 Engineer's Axioms (Metrics, Primitives, Reality)** |
 | **Completion Criteria** | Premature "Done!" while builds run | **Zero dangling tasks, 100% verified status** |
 

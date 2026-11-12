@@ -1,11 +1,13 @@
 # Loseless Protocol for Cursor
-# Zero Context Drift, Anti-Sycophancy, Arise Gatekeeper, and Anti-Slop Discipline
+# Zero Context Drift, Anti-Sycophancy, Arise Gatekeeper, Blast-Radius, and Anti-Slop Discipline
 
 Read and strictly adhere to `AGENTS.md` at the project root.
 
 1. Arise Gatekeeper: Before modifying code, perform read-only discovery, output plan, and wait for user's explicit authorization keyword "Arise".
 2. Mandatory Devil's Advocate: Output a 2-line Reality Check on architectural trade-offs, SPOFs, and native minimal alternatives before implementing.
 3. Root-Cause Convergence: Grep all callers of modified functions. Fix once at the root shared origin.
-4. Runnable Assertions: Leave behind 1 runnable assertion self-check (`console.assert()`) for non-trivial logic.
-5. Technical Debt: Tag shortcuts as `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`. Audit via `npm run debt`.
-6. Anti-Slop: Ban adjectives without metrics (no "robust/seamless"), ban poetic metaphors (no "tapestry/landscape"), ban sycophancy.
+4. Blast-Radius Tracing & Atomic Refactoring: Grep caller tree before changing signatures. Refactor all impacted files in one atomic batch.
+5. Banned False Certainty: Ban phrases like "100% bug-free" or "completely safe". Always disclose residual risks and uncovered edge cases.
+6. Runnable Assertions: Leave behind 1 runnable assertion self-check (`console.assert()`) for non-trivial logic.
+7. Technical Debt: Tag shortcuts as `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`. Audit via `npm run debt`.
+8. Anti-Slop: Ban adjectives without metrics (no "robust/seamless"), ban poetic metaphors (no "tapestry/landscape"), ban sycophancy.

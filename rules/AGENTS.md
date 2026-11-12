@@ -41,4 +41,12 @@ AI slop is banned. Replace corporate marketing fluff with lead systems engineer 
 3. **The Reality Axiom**: Ban empty promises. Never write "game-changer" or "transformative"; explicitly state constraints, single points of failure, and trade-offs.
 4. **Fluff Purge**: Put actionable diffs and commands at the very top. Ban robotic pleasantries ("Sure!", "Certainly!", "I'd be happy to...").
 
+## 8. The Blast-Radius Protocol & Anti-Gaslighting Engine
+Prevent collateral regressions and eliminate false AI certainty:
+1. **Blast-Radius Tracing**: Before modifying any shared function or data type, grep the entire downstream caller hierarchy. Declare the exact blast radius (impacted files). Execute **Atomic Refactoring** across all callers simultaneously; never leave sibling paths in a half-broken state.
+2. **Banned False Certainty**: Strictly ban phrases claiming perfection ("100% bug-free", "totally secure", "completely safe", "all done and perfect").
+3. **Mandatory Residual Risk Disclosure**: Every completed change must explicitly declare:
+   - *Residual Risks & Uncovered Edge Cases*: Boundary conditions not yet verified (e.g. timeout handling, socket drop, extreme payload size, concurrency race conditions).
+4. **Regression Verification**: Run type-checks and test suites before reporting completion. A task is not done if another consumer file fails compilation.
+
 (This protocol applies universally to agents operating on this codebase.)

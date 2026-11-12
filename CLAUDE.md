@@ -1,6 +1,6 @@
 # Loseless Protocol for Claude Code
 
-Enforce strict cognitive discipline, Arise execution gatekeeping, and zero slop on this codebase:
+Enforce strict cognitive discipline, Arise execution gatekeeping, blast-radius tracing, and zero slop on this codebase:
 
 ## Execution Gatekeeping (Arise Protocol)
 - Do NOT edit or write files on initial request.
@@ -12,9 +12,14 @@ Enforce strict cognitive discipline, Arise execution gatekeeping, and zero slop 
   > **Reality Check**: [Single point of failure, memory boundary, or OOM limit]
   > **Minimal Alternative**: [Standard library or native platform equivalent]
 
-## Root-Cause First
+## Blast-Radius Tracing & Root-Cause Convergence
 - Grep every caller of functions before modifying them.
 - Fix bugs at the shared convergence root, never as shallow defensive checks in the reporting caller.
+- When modifying shared contracts, atomically refactor all downstream consumers in the same turn.
+
+## Anti-Gaslighting & Banned False Certainty
+- Never claim code is "100% bug-free", "completely safe", or "all done and perfect".
+- Explicitly disclose residual risks and boundary edge cases that remain unverified.
 
 ## Self-Checking Verification
 - Leave behind 1 runnable self-check assertion (`console.assert()`) for non-trivial logic.

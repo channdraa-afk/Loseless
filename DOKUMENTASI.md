@@ -75,3 +75,6 @@ c:\My Project\Loseless\
 - [x] Multi-Platform Ecosystem & Empirical Benchmark:
   - **Problem**: Repositori belum mendukung platform di luar Gemini/Antigravity (Cursor, Claude Code, Windsurf, Cline) serta belum memiliki pengujian unit dan data benchmark empiris terukur.
   - **Solution / State**: Mengimplementasikan `.cursorrules`, `CLAUDE.md`, `.windsurfrules`, `.clinerules`, root `AGENTS.md`, test suite `tests/` (`scanner.test.js`, `manifests.test.js`), dan benchmark suite `scripts/benchmark.js` (1.85ms latency, 539 ops/sec, 75.6% token savings).
+- [x] Blast-Radius Protocol & Anti-Gaslighting Engine:
+  - **Problem**: AI sering menciptakan regresi berantai (*collateral damage*) karena pandangan sempit saat mengedit file serta melakukan gaslighting dengan klaim manis palsu ("100% aman").
+  - **Solution / State**: Mengintegrasikan protokol pelacak radius ledakan (Blast-Radius Tracing), kewajiban *Atomic Refactoring*, pelarangan mutlak klaim kepastian palsu (*Banned False Certainty*), serta kewajiban mencantumkan daftar *Residual Risks & Uncovered Edge Cases*.

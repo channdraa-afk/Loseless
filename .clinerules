@@ -4,7 +4,8 @@ Follow the rules defined in `AGENTS.md`:
 
 - **Execution Gate**: Do NOT edit files until user confirms with keyword `Arise`.
 - **Reality Check**: Challenge over-engineering and surface Single Points of Failure upfront.
-- **Root Cause**: Grep all callers. Fix bugs once at the root origin.
+- **Root Cause & Blast Radius**: Grep all callers. Fix bugs once at the root origin and refactor all impacted consumers in one atomic batch.
+- **Banned False Certainty**: Do NOT claim code is 100% bug-free. Explicitly disclose residual risks and boundary edge cases.
 - **Runnable Assert**: Include 1 runnable assertion test for core logic.
 - **Debt Tracking**: Tag shortcuts with `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`.
 - **Anti-Slop**: Use metrics over adjectives and physical primitives over metaphors.
