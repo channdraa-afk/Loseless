@@ -44,6 +44,28 @@ Loseless ships in three distinct tiers tailored to your workflow and environment
 
 ---
 
+## Quick 1-Line Installation
+
+Install Loseless CLI and local shims instantly:
+
+### macOS & Linux
+```bash
+curl -fsSL https://raw.githubusercontent.com/channdraa-afk/Loseless/main/install.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/channdraa-afk/Loseless/main/install.ps1 | iex
+```
+
+Verify your installation:
+```bash
+loseless status
+loseless help
+```
+
+---
+
 ## Core Architectural Pillars
 
 ### 1. The Arise Protocol & Physical Hook Gatekeeper

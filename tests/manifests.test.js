@@ -79,4 +79,19 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   console.log('  ✓ Multi-platform rule adapter files, physical hook manifests, skill bundles, and UI slash commands verified');
 }
 
+// Test 6: Verify TypeScript types, CLI binary entry, and Universal Installers
+{
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'types', 'index.d.ts')), 'types/index.d.ts must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'index.js')), 'index.js must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'bin', 'loseless.js')), 'bin/loseless.js must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'install.ps1')), 'install.ps1 must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'install.sh')), 'install.sh must exist');
+
+  const { defineConfig } = require('../index.js');
+  assert.strictEqual(typeof defineConfig, 'function', 'index.js must export defineConfig helper');
+  const dummyConfig = { ariseMode: 'adaptive', gateKeyword: 'Arise' };
+  assert.deepStrictEqual(defineConfig(dummyConfig), dummyConfig, 'defineConfig must return config object');
+  console.log('  ✓ TypeScript declarations, CLI binary, and Universal 1-Click Installers verified');
+}
+
 console.log('All Manifest Integrity Tests Passed Successfully.\n');

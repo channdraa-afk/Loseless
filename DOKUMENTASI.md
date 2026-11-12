@@ -164,3 +164,10 @@ c:\My Project\Loseless\
     3. *Zero-Slop Prompt Compression*: Mengompresi `rules/AGENTS.md` menjadi < 830 token, melarang keras emoji dekoratif yang tidak fungsional, serta menegakkan format jawaban padat data.
     4. *Multi-Language AST Reference Scanner*: Memperluas `scripts/blast-radius.js` untuk mendeteksi referensi lintas berkas di Python, Go, Rust, Java, C++, PHP, dan Shell dengan pemilahan jenis (definition, import, call-site).
     5. *Multi-Tier Compatibility Matrix*: Menambahkan panduan pemilihan flavor yang jelas di `README.md`. Test suite lengkap (Scanner, Manifests, Hooks, Blast-Radius) lulus 100%.
+- [x] Universal 1-Click Installers & TypeScript Contracts (Milestone A):
+  - **Problem**: Pengguna awam kesulitan memasang Loseless tanpa clone manual, ketiadaan executable launcher mandiri, dan developer TypeScript tidak memiliki type definitions untuk file konfigurasi `loseless.config.ts`.
+  - **Solution / State**:
+    1. *PowerShell Universal Installer (`install.ps1`)*: Menyediakan installer 1-baris Windows yang otomatis menyinkronkan core repositori, membuat launcher shims (`loseless.cmd` & `loseless.ps1`), dan mengonfigurasi User PATH di registry secara idempoten tanpa hak akses admin.
+    2. *POSIX Shell Installer (`install.sh`)*: Menyediakan installer 1-baris Linux/macOS yang membuat executable wrapper `~/.loseless/bin/loseless` dan mengonfigurasi PATH di `.zshrc`/`.bashrc`.
+    3. *TypeScript Type Definitions (`types/index.d.ts`)*: Menyediakan kontrak tipe data statis (`LoselessConfig`, `BlastRadiusResult`, `DebtItem`, `AriseMode`) dan helper `defineConfig()` yang diekspor via `index.js`.
+    4. *Universal CLI Runner (`bin/loseless.js`)*: Menyediakan CLI entrypoint tunggal yang menangani subkomando `status`, `blast`, `debt`, `gate`, dan `benchmark` baik via launcher global maupun `npx loseless`. Unit test suite lulus 100%.
