@@ -73,12 +73,17 @@ try {
   console.log('  ✓ Auto-relock turn policy verified (anti-stale unlock leak)');
 }
 
-// Test 8: Frustration detection via local patterns dataset (0 token cost)
+// Test 8: Frustration detection via local patterns dataset in adaptive mode (0 token cost)
 {
   relockSession();
-  const res = analyzePrompt('ngapain sih pake arise ribet amat');
-  assert.strictEqual(res.action, 'frustration_detected', 'Frustration pattern must be detected');
-  console.log('  ✓ Sentiment Radar catches user frustration cues locally');
+  const adaptiveConfig = { ariseMode: 'adaptive', gateKeyword: 'Arise' };
+  const res = analyzePrompt('ngapain sih pake arise ribet amat', adaptiveConfig);
+  assert.strictEqual(res.action, 'frustration_detected', 'Frustration pattern must be detected in adaptive mode');
+
+  // Verify in strict mode frustration does NOT bypass
+  const strictRes = analyzePrompt('ngapain sih pake arise ribet amat');
+  assert.strictEqual(strictRes.action, 'none', 'Frustration pattern must NOT offer bypass in strict mode');
+  console.log('  ✓ Sentiment Radar catches user frustration in adaptive mode & enforces zero-bypass in strict mode');
 }
 
 // Test 9: Explicit bypass command unlocks execution

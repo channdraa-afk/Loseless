@@ -91,10 +91,10 @@ function loadPatterns() {
   return {};
 }
 
-function analyzePrompt(promptText) {
+function analyzePrompt(promptText, configOverride = null) {
   if (!promptText || typeof promptText !== 'string') return { action: 'none' };
 
-  const config = loadConfig();
+  const config = configOverride || loadConfig();
   const session = loadSession();
   const patterns = loadPatterns();
   const trimmed = promptText.trim();
