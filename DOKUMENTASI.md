@@ -42,8 +42,8 @@ c:\My Project\Loseless\
 ├── DOKUMENTASI.md            # Sub-Kitab SSOT Proyek (ADR-Lite)
 ├── hooks\
 │   ├── loseless-activate.js      # SessionStart activation hook
-│   ├── loseless-pretool.js       # PreToolUse physical write blocker
-│   ├── loseless-mode-tracker.js  # UserPromptSubmit sentiment & gate tracker
+│   ├── loseless-pretool.js       # PreToolUse physical write blocker (stdin/argv)
+│   ├── loseless-mode-tracker.js  # UserPromptSubmit sentiment & auto-relock tracker
 │   ├── sentiment-patterns.json   # Kamus lokal ekspresi friksi/marah (0 token)
 │   ├── claude-codex-hooks.json   # Manifest hook Claude Code & Codex
 │   └── cursor-hooks.json         # Manifest hook Cursor IDE
@@ -55,14 +55,15 @@ c:\My Project\Loseless\
 │   └── benchmark.js          # Benchmark throughput dan token
 ├── tests\
 │   ├── scanner.test.js       # Test suite scanner multi-sintaks
-│   ├── manifests.test.js     # Test suite integritas manifest & adapters
-│   ├── hooks.test.js         # Test suite penegakan fisik runtime hooks
-│   └── blast-radius.test.js  # Test suite pelacak radius ledakan
+│   ├── manifests.test.js     # Test suite integritas manifest, hooks & skills
+│   ├── hooks.test.js         # Test suite penegakan fisik runtime hooks & auto-relock
+│   └── blast-radius.test.js  # Test suite pelacak radius ledakan lookaround
 ├── skills\
-│   ├── loseless\SKILL.md     # Command /loseless [cold|warm|strict]
+│   ├── loseless\SKILL.md     # Command /loseless [cold|warm|status]
 │   ├── loseless-debt\SKILL.md # Harvester tag "// loseless:"
 │   ├── loseless-critique\SKILL.md # One-shot Devil's Advocate review
-│   └── loseless-arise\SKILL.md # Two-phase execution gatekeeper
+│   ├── loseless-arise\SKILL.md # Two-phase execution gatekeeper
+│   └── loseless-blast\SKILL.md # AST reference aggregator skill
 └── assets\
     └── logo.svg              # Logo visual minimalis
 ```
@@ -72,9 +73,10 @@ c:\My Project\Loseless\
 ## 📦 PILAR 2: STACK & PLUGIN ECOSYSTEM
 
 - **Plugin Type**: Antigravity Cross-Agent Bundle (`plugin.json` + `gemini-extension.json` + `hooks/`).
-- **Physical Enforcement**: Native Node.js Hooks (`PreToolUse`, `SessionStart`, `UserPromptSubmit`) setara level Ponytail.
+- **Physical Enforcement**: Native Node.js Hooks (`PreToolUse`, `SessionStart`, `UserPromptSubmit`) dengan dukungan streaming JSON via `stdin` dan CLI arguments.
 - **Context Anchor**: `rules/AGENTS.md` (di-load otomatis oleh agent sebagai prompt sistem ringkas, < 75 baris).
 - **Sentiment Radar**: Zero-Token Local Pattern Bank di `hooks/sentiment-patterns.json`.
+- **Lifecycle Policy**: Turn-Scoped Auto-Relock (mengunci kembali ke Fase 1 saat tugas baru dimulai untuk mencegah *stale unlock leaks*).
 - **Dependency Strategy**: Resilient architecture via `picocolors` dengan zero-crash graceful fallback ke standard library.
 
 ---
@@ -106,11 +108,14 @@ c:\My Project\Loseless\
   - **Problem**: Kebutuhan kustomisasi kata kunci otorisasi per-tim serta kewajiban menyisipkan kartu penjaga gerbang otomatis ber-branding Loseless.
   - **Solution / State**: Mengimplementasikan `loseless.config.json` dan klausul kartu gerbang otomatis di `rules/AGENTS.md`.
 - [x] Penyempurnaan 6 Kelemahan Struktural (Engine v1.1.0):
-  - **Problem**: Ditemukan 6 flaws: friksi gerbang sepele, ilusi penegakan prompt-only, tabrakan sinyal router semantik, regex scanner rapuh pada multiline JSDoc, kelelahan peringatan (warning fatigue), dan token bloat pada monorepo besar.
+  - **Problem**: Ditemukan 6 kelemahan: friksi gerbang sepele, ilusi penegakan prompt-only, tabrakan sinyal router semantik, regex scanner rapuh pada multiline JSDoc, kelelahan peringatan, dan token bloat monorepo.
+  - **Solution / State**: Mengimplementasikan Adaptive Gatekeeper, Physical Node.js Hooks Suite, Cascading Semantic Router, Resilient Multi-Syntax Debt Lexer, Tiered Risk Matrix, dan Blast-Radius CLI Offloader.
+- [x] Pembersihan Bug Tipis & Refinement (Engine v1.1.1):
+  - **Problem**: Terdeteksi 6 bug tipis: kegagalan membaca data stream `stdin` di Claude Code/Cursor, kegagalan regex word boundary pada simbol khusus (`$state`, `@Directive`), kebocoran status unlock yang tak pernah relock otomatis (*stale unlock leak*), ketiadaan skill `/loseless-blast`, serta fast-track yang berpotensi menyentuh file config sistem.
   - **Solution / State**: 
-    1. *Adaptive Friction Radar*: Kamus lokal `hooks/sentiment-patterns.json` mencegat friksi pengguna di runtime Node.js (<1ms, 0 token overhead LLM) dan menawarkan bypass sementara secara ergonomis.
-    2. *Physical Hooks Suite*: Menghadirkan skrip runtime fisik `hooks/loseless-pretool.js` (PreToolUse write blocker), `loseless-activate.js`, dan `loseless-mode-tracker.js` yang setara level Ponytail.
-    3. *Hierarchical State Cascade*: Menetapkan prioritas deterministik: Cold Bug Triage $\rightarrow$ Warm Ideation $\rightarrow$ Strict Minimal Diff.
-    4. *Resilient Multi-Syntax Lexer*: Mendukung JSDoc `@loseless`, block comment `/* */`, case-insensitivity, dan panah fleksibel (`->`, `=>`, `-->`, `➔`).
-    5. *Tiered Risk Matrix*: Matriks 3 tingkat (Tier 0 hening pada diff sepele, Tier 1 lokal, Tier 2 wajib SPOF/Rollback) mengeliminasi alert fatigue.
-    6. *Blast-Radius CLI Offloader*: Script `scripts/blast-radius.js` meringkas 100+ baris pemanggil menjadi 3 baris agregat di chat (*95% token savings*) dengan gaya komunikasi anggun dan padat sinyal rekayasa.
+    1. *Stdin JSON Stream Parser*: Menambahkan pembaca `stdin` resilient non-blocking yang otomatis mem-parsing JSON payload hook di host CLI.
+    2. *Universal Lookaround Regex*: Mengganti `\b...\b` dengan `(?<![a-zA-Z0-9_])${escaped}(?![a-zA-Z0-9_])` di `scripts/blast-radius.js` sehingga simbol `$state` dan `@Directive` terdeteksi 100% akurat.
+    3. *Auto-Relock Turn Policy*: Menerapkan relock otomatis ke Fase 1 saat tugas baru tiba, mencegah kebocoran status unlock ke tugas berikutnya.
+    4. *Skill loseless-blast*: Menambahkan `skills/loseless-blast/SKILL.md` dan menyinkronkan seluruh dokumentasi skill.
+    5. *Benchmark Telemetry Expansion*: Menambahkan benchmark throughput `blast-radius` ke `scripts/benchmark.js`.
+    6. *Critical Config Isolation*: Memastikan file konfigurasi sensitif (`package.json`, `.env`, dll.) dikecualikan dari fast-track micro-diffs.
