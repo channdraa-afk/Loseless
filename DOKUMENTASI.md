@@ -196,4 +196,11 @@ c:\My Project\Loseless\
     7. *Official GitHub Release v1.4.0*: Memublikasikan rilis resmi di GitHub Releases dengan melampirkan binary pre-compiled multi-platform (`loseless-windows-amd64.exe`, `loseless-linux-amd64`, `loseless-darwin-arm64`) untuk download instan sekali klik. Seluruh 4 test suite lulus 100%.
 - [x] Two-Phase Micro-Cards & Output Token Minimization:
   - **Problem**: Format kartu Phase 1 sebelumnya (2 baris + pembatas) memakan ~22 token output dan tidak memiliki representasi status kartu saat Phase 2 aktif atau saat relock selesai.
-  - **Solution / State**: Mengadopsi format micro-card ultra padat 1 baris (< 10 token, hemat > 55% per giliran) untuk Phase 1 (`[Loseless: Phase 1 (Locked)] Token: Arise to execute.`) dan Phase 2 (`[Loseless: Phase 2 (Done)] Tasks complete. Relocked to Phase 1.`) di seluruh manifesto aturan (`rules/AGENTS.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`). Seluruh 4 test suite lulus 100%.
+  - **Solution / State**: Mengadopsi format micro-card ultra padat 1 baris (< 10 token, hemat > 55% per giliran) untuk Phase 1 (`[Loseless: Phase 1 (Locked)] Token: [GATE_KEYWORD] to execute.`) dan Phase 2 (`[Loseless: Phase 2 (Done)] Tasks complete. Relocked to Phase 1.`) di seluruh manifesto aturan (`rules/AGENTS.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`). Seluruh 4 test suite lulus 100%.
+- [x] Hardening File I/O Atomicity, EBUSY Retry Backoff & Path Traversal Defense:
+  - **Problem**: Penulisan sinkronus `session.json` rentan race condition pada konkurensi multi-agent (membaca file kosong saat truncated), lock handle antivirus Windows (EBUSY/EPERM), directory traversal pada `PreToolUse`, dan tidak adanya *self-healing* jika berkas JSON rusak.
+  - **Solution / State**:
+    1. *Atomic Write-Replace*: Menerapkan pola tulis ke berkas temp (`.session.tmp.<pid>.<time>`) lalu `fs.renameSync()` di Node.js dan `os.Rename()` di Go Native Core.
+    2. *Windows Lock Retry Backoff*: Menambahkan loop retry 3x dengan micro-sleep backoff untuk mengatasi interupsi file-locking Windows Defender/Indexers.
+    3. *Path Traversal Defense*: Menormalisasi seluruh `targetFile` dengan `path.resolve(process.cwd(), targetFile)` pada `hooks/loseless-pretool.js` untuk mendeteksi penyamaran path kritis (misal: `./sub/../package.json`).
+    4. *Self-Healing Corrupted Session*: Mengkarantina otomatis file sesi rusak ke `.corrupt.<time>` dan me-reset sesi sehat secara instan. Seluruh 4 test suite lulus 100%.

@@ -49,8 +49,10 @@ function checkToolAuthorization(toolName, targetFile) {
 
   // Fast-track micro diffs for non-code files (if configured)
   if (config.fastTrackMicroDiffs && targetFile) {
-    const baseName = path.basename(targetFile).toLowerCase();
-    const ext = path.extname(targetFile).toLowerCase();
+    // Canonical path normalization to neutralize relative traversal and slash discrepancies
+    const normalizedPath = path.resolve(process.cwd(), targetFile);
+    const baseName = path.basename(normalizedPath).toLowerCase();
+    const ext = path.extname(normalizedPath).toLowerCase();
 
     // Critical config files are NEVER fast-tracked
     if (!CRITICAL_CONFIG_FILES.has(baseName) && SAFE_MICRO_EXTENSIONS.has(ext)) {

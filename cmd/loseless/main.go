@@ -71,6 +71,20 @@ func saveSession(s SessionState) error {
 	if err != nil {
 		return err
 	}
+
+	// Atomic write-replace: write to temp file then rename
+	tmpPath := filepath.Join(dir, fmt.Sprintf(".session.tmp.%d.%d", os.Getpid(), time.Now().UnixNano()))
+	if err := os.WriteFile(tmpPath, data, 0644); err != nil {
+		return os.WriteFile(path, data, 0644)
+	}
+
+	for attempt := 0; attempt < 3; attempt++ {
+		if err := os.Rename(tmpPath, path); err == nil {
+			return nil
+		}
+		time.Sleep(time.Duration((attempt+1)*5) * time.Millisecond)
+	}
+	_ = os.Remove(tmpPath)
 	return os.WriteFile(path, data, 0644)
 }
 

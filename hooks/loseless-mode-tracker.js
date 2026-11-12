@@ -70,24 +70,91 @@ function loadConfig() {
   return { ...DEFAULT_CONFIG };
 }
 
+/**
+ * Atomic file writer with Windows retry backoff to prevent EBUSY/EPERM lock collisions.
+ */
+function atomicWriteFileSync(targetPath, content) {
+  const dir = path.dirname(targetPath);
+  if (!fs.existsSync(dir)) {
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+    } catch (e) {}
+  }
+  const tempPath = path.join(
+    dir,
+    `.session.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}`
+  );
+
+  let attempts = 0;
+  const maxAttempts = 3;
+
+  while (attempts < maxAttempts) {
+    try {
+      fs.writeFileSync(tempPath, content, "utf-8");
+      // Atomic rename overwrite
+      fs.renameSync(tempPath, targetPath);
+      return true;
+    } catch (err) {
+      attempts++;
+      try {
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      } catch (e) {}
+
+      if (attempts >= maxAttempts) {
+        try {
+          fs.writeFileSync(targetPath, content, "utf-8");
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      const start = Date.now();
+      while (Date.now() - start < attempts * 5) {}
+    }
+  }
+  return false;
+}
+
 function loadSession() {
   const filePath = getSessionFilePath();
   if (fs.existsSync(filePath)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-      // Auto-relock if session has expired beyond TTL
-      if (
-        data.updatedAt &&
-        Date.now() - data.updatedAt > SESSION_TTL_MS &&
-        !data.bypassed
-      ) {
-        data.phase = 1;
-        data.bypassOffered = false;
-        saveSession(data);
+    let raw = "";
+    let attempts = 0;
+    while (attempts < 3) {
+      try {
+        raw = fs.readFileSync(filePath, "utf-8");
+        break;
+      } catch (e) {
+        attempts++;
+        const start = Date.now();
+        while (Date.now() - start < attempts * 5) {}
       }
-      return data;
-    } catch (e) {}
+    }
+
+    if (raw && raw.trim()) {
+      try {
+        const data = JSON.parse(raw);
+        // Auto-relock if session has expired beyond TTL
+        if (
+          data.updatedAt &&
+          Date.now() - data.updatedAt > SESSION_TTL_MS &&
+          !data.bypassed
+        ) {
+          data.phase = 1;
+          data.bypassOffered = false;
+          saveSession(data);
+        }
+        return data;
+      } catch (parseErr) {
+        // Corrupted JSON detected: self-healing quarantine & reset
+        try {
+          const corruptPath = `${filePath}.corrupt.${Date.now()}`;
+          fs.renameSync(filePath, corruptPath);
+        } catch (e) {}
+      }
+    }
   }
+
   return {
     phase: 1, // 1: Locked (Read-Only Planning), 2: Unlocked (Execution Allowed)
     bypassed: false,
@@ -101,16 +168,17 @@ function saveSession(session) {
   try {
     session.updatedAt = Date.now();
     const filePath = getSessionFilePath();
-    fs.writeFileSync(filePath, JSON.stringify(session, null, 2), "utf-8");
+    const content = JSON.stringify(session, null, 2);
+    atomicWriteFileSync(filePath, content);
 
     // Mirror to sibling/parent session location if it exists to maintain cross-workspace sync
     if (!process.env.LOSELESS_SESSION_DIR) {
       const pluginSession = path.join(path.resolve(__dirname, ".."), ".loseless", "session.json");
       const cwdSession = path.join(process.cwd(), ".loseless", "session.json");
       if (filePath === pluginSession && fs.existsSync(path.dirname(cwdSession))) {
-        fs.writeFileSync(cwdSession, JSON.stringify(session, null, 2), "utf-8");
+        atomicWriteFileSync(cwdSession, content);
       } else if (filePath === cwdSession && fs.existsSync(path.dirname(pluginSession))) {
-        fs.writeFileSync(pluginSession, JSON.stringify(session, null, 2), "utf-8");
+        atomicWriteFileSync(pluginSession, content);
       }
     }
   } catch (e) {}

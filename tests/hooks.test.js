@@ -132,9 +132,36 @@ try {
   console.log('  ✓ Auto-relock policy clears bypass and enforces Phase 1 on new turns');
 }
 
+// Test 13: Path normalization & traversal defense blocks masked critical config
+{
+  const check = checkToolAuthorization('write_file', './subfolder/../package.json');
+  assert.strictEqual(check.allowed, false, 'Masked traversal to package.json must be blocked');
+  console.log('  ✓ Path traversal normalization and critical config defense verified');
+}
+
+// Test 14: Corrupted session file self-healing quarantine and recovery
+{
+  const testFile = getSessionFilePath();
+  // Intentionally corrupt the session file
+  fs.writeFileSync(testFile, 'INVALID_JSON_CORRUPTED_BYTES{{{', 'utf-8');
+  const healed = loadSession();
+  assert.strictEqual(healed.phase, 1, 'Corrupted session must safely fall back to Phase 1');
+  assert.strictEqual(healed.bypassed, false, 'Corrupted session must not be bypassed');
+
+  // Verify that atomic write creates valid parseable JSON
+  saveSession({ phase: 2, bypassed: false, lastKeyword: 'Arise', updatedAt: Date.now() });
+  const reloaded = loadSession();
+  assert.strictEqual(reloaded.phase, 2, 'Reloaded session after atomic write must be intact');
+  console.log('  ✓ Corrupted session self-healing quarantine and atomic write verified');
+}
+
 // Cleanup isolated test sandbox
 try {
   if (fs.existsSync(sessionFile)) fs.unlinkSync(sessionFile);
+  const leftoverFiles = fs.readdirSync(testSessionDir);
+  for (const f of leftoverFiles) {
+    try { fs.unlinkSync(path.join(testSessionDir, f)); } catch (e) {}
+  }
   if (fs.existsSync(testSessionDir)) fs.rmdirSync(testSessionDir);
 } catch (e) {}
 

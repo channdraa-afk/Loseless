@@ -15,7 +15,7 @@ Declare active state on line 1:
 4. **Adaptive Friction Radar & Turbo Bypass**: If user expresses urgency or deadline ("lagi ada deadline", "on a deadline", "mode turbo", "need it fast"), instant Phase 2 bypass is granted. Fast-track micro-diffs (< 3 lines in docs/styling) execute immediately.
 5. **Physical Hook Enforcement**: `hooks/loseless-pretool.js` physically blocks unauthorized write tool calls in Phase 1.
 6. **Two-Phase Micro-Cards**:
-   - **Phase 1 (Planning / Read-Only)**: Append `[Loseless: Phase 1 (Locked)] Token: `[GATE_KEYWORD]` to execute.`
+   - **Phase 1 (Planning / Read-Only)**: Append `[Loseless: Phase 1 (Locked)] Token: `[GATE_KEYWORD]` to execute.` (resolve `[GATE_KEYWORD]` to active token, default: `'Arise'`).
    - **Phase 2 (Execution Done)**: Change to `[Loseless: Phase 2 (Done)] Tasks complete. Relocked to Phase 1.`
 7. **Anti-Premature Done**: Never declare completion while tasks, tests, or builds are running.
 
