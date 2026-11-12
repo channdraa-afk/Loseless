@@ -45,7 +45,7 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   console.log('  ✓ loseless.config.json schema and default keyword verified');
 }
 
-// Test 5: Verify required rule files and hook manifests exist
+// Test 5: Verify required rule files, hook manifests, and skill definitions exist
 {
   assert.ok(fs.existsSync(path.join(process.cwd(), 'rules', 'AGENTS.md')), 'rules/AGENTS.md must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'AGENTS.md')), 'Root AGENTS.md must exist');
@@ -54,7 +54,14 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'claude-codex-hooks.json')), 'claude-codex-hooks.json must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'cursor-hooks.json')), 'cursor-hooks.json must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'sentiment-patterns.json')), 'sentiment-patterns.json must exist');
-  console.log('  ✓ Multi-platform rule adapter files and physical hook manifests verified');
+
+  // Verify skills
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless', 'SKILL.md')), 'skills/loseless must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-arise', 'SKILL.md')), 'skills/loseless-arise must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-debt', 'SKILL.md')), 'skills/loseless-debt must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-critique', 'SKILL.md')), 'skills/loseless-critique must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-blast', 'SKILL.md')), 'skills/loseless-blast must exist');
+  console.log('  ✓ Multi-platform rule adapter files, physical hook manifests, and skill bundles verified');
 }
 
 console.log('All Manifest Integrity Tests Passed Successfully.\n');

@@ -1,24 +1,33 @@
 ---
 name: loseless-debt
 description: >
-  Scans the entire repository for 'lossless:' comment tags and compiles an
-  actionable Technical Debt Ledger via the bundled CLI tool or regex. Use when
-  assessing shortcuts taken during rapid development or evaluating refactoring.
+  Scans the entire repository for 'loseless:' comment tags and compiles an
+  actionable Technical Debt Ledger via the bundled CLI tool. Supports inline,
+  block, and multiline JSDoc formats.
 license: MIT
 ---
 
 # Loseless Technical Debt Ledger
 
-`loseless-debt` is an automated scanner that harvests every deliberate shortcut marked with the `lossless:` comment tag across your codebase.
+`loseless-debt` is an automated scanner that harvests every deliberate shortcut marked with the `loseless:` or `lossless:` comment tag across your codebase.
 
 ## The Debt Tag Convention
 Developers and agents mark intentional simplifications using:
 ```typescript
-// lossless: [ceiling: 100 req/sec] -> upgrade: [introduce Redis stream when latency spikes]
+// loseless: [ceiling: 100 req/sec] -> upgrade: [introduce Redis stream when latency spikes]
+/* loseless: [ceiling: 50 conns] => upgrade: [connection pooler] */
+```
+Or multiline JSDoc blocks:
+```javascript
+/**
+ * @loseless
+ * ceiling: 1000 items in memory
+ * upgrade: stream chunking pipeline
+ */
 ```
 Or in Python/Shell/YAML:
 ```python
-# lossless: [ceiling: O(N) linear search] -> upgrade: [use binary search or hash index if len > 1000]
+# loseless: [ceiling: O(N) linear search] -> upgrade: [use binary search or hash index if len > 1000]
 ```
 
 ## CLI Scanner Tool
@@ -31,7 +40,7 @@ node scripts/debt-scanner.js [optional target directory]
 
 ## Scanner Workflow
 When invoked (via `/loseless-debt` or "scan technical debt" or `npm run debt`):
-1. Recursively scans the workspace for `lossless:` across all major language extensions.
+1. Recursively scans the workspace across all major language extensions.
 2. Automatically skips `node_modules`, `dist`, `.git`, `.cache`, `coverage`.
 3. Parses each finding into:
    - **File & Line**: Source location.
