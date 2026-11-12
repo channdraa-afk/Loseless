@@ -30,7 +30,8 @@
     "test": "node tests/scanner.test.js && node tests/manifests.test.js && node tests/hooks.test.js && node tests/blast-radius.test.js",
     "debt": "node scripts/debt-scanner.js",
     "blast-radius": "node scripts/blast-radius.js",
-    "benchmark": "node scripts/benchmark.js"
+    "benchmark": "node scripts/benchmark.js",
+    "benchmark:py": "python benchmarks/eval_runner.py"
   },
   "dependencies": {
     "picocolors": "^1.1.1"

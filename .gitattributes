@@ -1,0 +1,6 @@
+# GitHub Linguist Language Detection Configuration
+benchmarks/*.py linguist-detectable=true
+benchmarks/*.py linguist-vendored=false
+types/*.d.ts linguist-detectable=true
+install.sh linguist-detectable=true
+install.ps1 linguist-detectable=true

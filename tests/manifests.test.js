@@ -86,12 +86,16 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'bin', 'loseless.js')), 'bin/loseless.js must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'install.ps1')), 'install.ps1 must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'install.sh')), 'install.sh must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), '.gitattributes')), '.gitattributes must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'benchmarks', 'tasks.py')), 'benchmarks/tasks.py must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'benchmarks', 'metrics.py')), 'benchmarks/metrics.py must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'benchmarks', 'eval_runner.py')), 'benchmarks/eval_runner.py must exist');
 
   const { defineConfig } = require('../index.js');
   assert.strictEqual(typeof defineConfig, 'function', 'index.js must export defineConfig helper');
   const dummyConfig = { ariseMode: 'adaptive', gateKeyword: 'Arise' };
   assert.deepStrictEqual(defineConfig(dummyConfig), dummyConfig, 'defineConfig must return config object');
-  console.log('  ✓ TypeScript declarations, CLI binary, and Universal 1-Click Installers verified');
+  console.log('  ✓ TypeScript declarations, CLI binary, Universal Installers, and Python benchmarks verified');
 }
 
 console.log('All Manifest Integrity Tests Passed Successfully.\n');

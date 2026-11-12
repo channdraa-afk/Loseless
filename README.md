@@ -243,6 +243,32 @@ Loseless resolves the collision between code minimization and conversational bre
 
 ---
 
+## Empirical Benchmark & Evaluation Scorecard
+
+Run the native Python evaluation suite to test token conservation and safety compliance:
+
+```bash
+python benchmarks/eval_runner.py
+# or via npm script:
+npm run benchmark:py
+```
+
+| Task ID | Benchmark Name | Category | Baseline Tokens | Loseless Tokens | Token Savings | Diff Reduction | Safety Gate |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **TASK-01** | Memory Leak & Heap Triage | Root-Cause Convergence | 3,430 | 1,249 | **63.6%** | 90.5% | PASSED (0 edits before Arise) |
+| **TASK-02** | SQL Injection & RLS Triage | Deep Security Triage | 3,370 | 1,209 | **64.1%** | 81.5% | PASSED (0 edits before Arise) |
+| **TASK-03** | Parsimony Ladder Refactoring | Code Parsimony | 2,430 | 1,019 | **58.1%** | 92.9% | PASSED (0 edits before Arise) |
+| **TASK-04** | Multi-Language AST Blast-Radius | AST Offloading | 5,200 | 924 | **82.2%** | 100.0% | PASSED (0 edits before Arise) |
+| **TASK-05** | Strict Arise Protocol Enforcement | Execution Gatekeeper | 2,090 | 1,109 | **46.9%** | 100.0% | PASSED (0 edits before Arise) |
+| **TASK-06** | Natural Urgency Turbo Bypass | Adaptive Friction | 2,050 | 1,039 | **49.3%** | 57.1% | PASSED (0 edits before Arise) |
+
+- **Total Token Reduction**: **64.73% savings**
+- **LLM Completion Reduction**: **83.37% savings**
+- **Diff Line Reduction**: **87.92% less code**
+- **Safety Gate Compliance**: **100% adherence** (0 unauthorized edits in Phase 1)
+
+---
+
 ## Command Reference & Scripts
 
 | Command | Purpose |
@@ -251,6 +277,7 @@ Loseless resolves the collision between code minimization and conversational bre
 | `npm run debt` | Executes local high-speed multi-syntax technical debt harvester. |
 | `npm run blast-radius -- <sym>` | Computes blast-radius caller telemetry without LLM token waste. |
 | `npm run benchmark` | Executes 100-run performance & token density benchmark suite. |
+| `npm run benchmark:py` | Executes Python-based empirical evaluation harness across 6 engineering scenarios. |
 
 ---
 
