@@ -1,0 +1,2 @@
+description = "Compute blast-radius impact and cross-module AST dependencies"
+prompt = "Calculate blast-radius impact for symbol '{{args}}' using the local offloader CLI. Classify into Tiered Risk Matrix (Tier 0/1/2) and output a concise 3-line aggregate telemetry report."

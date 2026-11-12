@@ -42,6 +42,7 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(config.gateKeyword, 'Config must declare gateKeyword');
   assert.strictEqual(config.gateKeyword, 'Arise', 'Default gateKeyword must be Arise');
   assert.ok(config.ariseMode, 'Config must declare ariseMode');
+  assert.strictEqual(config.ariseMode, 'strict', 'Current calibrated ariseMode must be strict');
   console.log('  ✓ loseless.config.json schema and default keyword verified');
 }
 
@@ -61,7 +62,13 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-debt', 'SKILL.md')), 'skills/loseless-debt must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-critique', 'SKILL.md')), 'skills/loseless-critique must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', 'loseless-blast', 'SKILL.md')), 'skills/loseless-blast must exist');
-  console.log('  ✓ Multi-platform rule adapter files, physical hook manifests, and skill bundles verified');
+
+  // Verify UI commands (*.toml)
+  const requiredCommands = ['loseless.toml', 'loseless-debt.toml', 'loseless-blast.toml', 'loseless-critique.toml', 'loseless-arise.toml'];
+  requiredCommands.forEach(cmd => {
+    assert.ok(fs.existsSync(path.join(process.cwd(), 'commands', cmd)), `commands/${cmd} must exist`);
+  });
+  console.log('  ✓ Multi-platform rule adapter files, physical hook manifests, skill bundles, and UI slash commands verified');
 }
 
 console.log('All Manifest Integrity Tests Passed Successfully.\n');

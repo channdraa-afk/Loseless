@@ -1,0 +1,2 @@
+description = "Harvest bounded technical debt items into a structured ledger"
+prompt = "Scan repository for // loseless: or // lossless: annotations using the bundled debt scanner. Output an actionable Technical Debt Ledger grouped by file with ceiling limits and upgrade paths."

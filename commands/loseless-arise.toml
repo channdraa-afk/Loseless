@@ -1,0 +1,2 @@
+description = "Inspect Arise Protocol gatekeeper state and validation token"
+prompt = "Report Arise Protocol gatekeeper status, current execution phase, active authorization token, and adaptive friction radar configuration."

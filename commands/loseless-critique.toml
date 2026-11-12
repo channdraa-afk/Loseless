@@ -1,0 +1,2 @@
+description = "Execute an uncompromising one-shot Devil's Advocate reality check"
+prompt = "Conduct a ruthless Devil's Advocate architectural critique on current proposals or recent diffs. Highlight Single Points of Failure, memory bounds, and minimal platform-native alternatives."

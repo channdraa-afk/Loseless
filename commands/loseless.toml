@@ -1,0 +1,2 @@
+description = "Regulate Loseless cognitive entropy (cold/warm/status)"
+prompt = "Engage Loseless cognitive mode {{args}}. If cold: zero-entropy deterministic root-cause analysis. If warm: divergent creative brainstorming. If status: display active mode and protocol telemetry."
