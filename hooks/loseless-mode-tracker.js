@@ -3,11 +3,13 @@
 /**
  * Loseless Mode Tracker & Sentiment Interceptor
  * Intercepts user prompt input at zero LLM token cost.
- * Manages Phase 1 (Locked) vs Phase 2 (Unlocked) and detects friction/bypass cues.
+ * Manages Phase 1 (Locked) vs Phase 2 (Unlocked), auto-relock lifecycle, and detects friction/bypass cues.
  */
 
 const fs = require('fs');
 const path = require('path');
+
+const SESSION_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 const DEFAULT_CONFIG = {
   gateKeyword: 'Arise',
@@ -43,7 +45,14 @@ function loadSession() {
   const filePath = getSessionFilePath();
   if (fs.existsSync(filePath)) {
     try {
-      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      // Auto-relock if session has expired beyond TTL
+      if (data.updatedAt && (Date.now() - data.updatedAt > SESSION_TTL_MS) && !data.bypassed) {
+        data.phase = 1;
+        data.bypassOffered = false;
+        saveSession(data);
+      }
+      return data;
     } catch (e) {}
   }
   return {
@@ -61,6 +70,15 @@ function saveSession(session) {
     session.updatedAt = Date.now();
     fs.writeFileSync(filePath, JSON.stringify(session, null, 2), 'utf-8');
   } catch (e) {}
+}
+
+function relockSession() {
+  const session = loadSession();
+  session.phase = 1;
+  session.bypassed = false;
+  session.bypassOffered = false;
+  saveSession(session);
+  return session;
 }
 
 function loadPatterns() {
@@ -132,28 +150,63 @@ function analyzePrompt(promptText) {
   }
 
   // 4. Reconciliation detection
-  if (session.bypassed || session.phase === 2) {
-    const reconcileList = patterns.satisfaction_reconcile || [];
-    for (const recWord of reconcileList) {
-      if (lower.includes(recWord)) {
-        session.phase = 1;
-        session.bypassed = false;
-        session.bypassOffered = false;
-        saveSession(session);
-        return {
-          action: 'reconciled',
-          phase: 1,
-          message: `[Loseless] Task reconciled. Gatekeeper relocked (Phase 1).`
-        };
-      }
+  const reconcileList = patterns.satisfaction_reconcile || [];
+  for (const recWord of reconcileList) {
+    if (lower.includes(recWord)) {
+      session.phase = 1;
+      session.bypassed = false;
+      session.bypassOffered = false;
+      saveSession(session);
+      return {
+        action: 'reconciled',
+        phase: 1,
+        message: `[Loseless] Task reconciled. Gatekeeper relocked (Phase 1).`
+      };
     }
+  }
+
+  // 5. Auto-Relock Turn Policy:
+  // If the previous turn unlocked phase 2, but a new prompt arrives that is neither Arise nor bypass,
+  // we automatically relock to Phase 1 for the new task.
+  if (session.phase === 2 && !session.bypassed && session.lastKeyword === gateKeyword) {
+    session.phase = 1;
+    session.lastKeyword = null;
+    saveSession(session);
+    return {
+      action: 'auto_relocked',
+      phase: 1,
+      message: `[Loseless] New task detected. Gatekeeper relocked (Phase 1 Discovery Mode).`
+    };
   }
 
   return { action: 'none', phase: session.phase };
 }
 
+function readInputFromEnvironment() {
+  if (process.argv[2]) {
+    return process.argv[2];
+  }
+  if (process.env.USER_PROMPT) {
+    return process.env.USER_PROMPT;
+  }
+  if (!process.stdin.isTTY) {
+    try {
+      const piped = fs.readFileSync(0, 'utf-8');
+      if (piped) {
+        try {
+          const json = JSON.parse(piped.replace(/^\uFEFF/, ''));
+          return json.prompt || json.text || json.input || json.message || piped;
+        } catch (e) {
+          return piped.trim();
+        }
+      }
+    } catch (e) {}
+  }
+  return '';
+}
+
 function run() {
-  const promptInput = process.argv[2] || process.env.USER_PROMPT || '';
+  const promptInput = readInputFromEnvironment();
   const result = analyzePrompt(promptInput);
   if (result.message) {
     console.log(result.message);
@@ -169,5 +222,7 @@ module.exports = {
   loadConfig,
   loadSession,
   saveSession,
-  getSessionFilePath
+  relockSession,
+  getSessionFilePath,
+  readInputFromEnvironment
 };
