@@ -89,6 +89,24 @@ Before modifying any source file in the repository, the agent adheres to an immu
 └────────────────────────────────────────────────────────┘
 ```
 
+#### Configurable Gate Keyword (`loseless.config.json`)
+By default, the authorization token is strictly **`Arise`**. Teams can customize their sacred keyword by placing an optional `loseless.config.json` at the project root:
+
+```json
+{
+  "gateKeyword": "Execute",
+  "strictMode": true
+}
+```
+
+#### Mandatory Auto-Injected Gatekeeper Card
+At the conclusion of every Phase 1 planning turn, the agent automatically appends the standardized Gatekeeper Card:
+
+> ---
+> 🔒 **Loseless Protocol: Execution Locked (Phase 1 — Read-Only)**  
+> *No files will be modified without explicit authorization.*  
+> 👉 Authorization token required: **`Arise`** *(or your configured keyword)* to execute.
+
 ### 2. Mandatory Devil's Advocate (The Anti-Yes-Man Engine)
 
 Loseless forbids passive sycophancy. Whenever an architectural choice or proposal is evaluated, the agent must output a 2-line **Reality Check** upfront:

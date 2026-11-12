@@ -1,11 +1,16 @@
 # Loseless Protocol for Claude Code
 
-Enforce strict cognitive discipline, Arise execution gatekeeping, blast-radius tracing, and zero slop on this codebase:
+Enforce strict cognitive discipline, configurable Arise execution gatekeeping, blast-radius tracing, and zero slop on this codebase:
 
 ## Execution Gatekeeping (Arise Protocol)
 - Do NOT edit or write files on initial request.
 - First explore the codebase in read-only mode, identify call-tree dependencies, and present an Implementation Plan with trade-offs.
-- Await the exact user authorization keyword: `Arise`.
+- In every Phase 1 response, append the Gatekeeper Card:
+  ---
+  🔒 **Loseless Protocol: Execution Locked (Phase 1 — Read-Only)**  
+  *No files will be modified without explicit authorization.*  
+  👉 Authorization token required: **`Arise`** (or keyword in `loseless.config.json`) to execute.
+- Await the exact user authorization keyword before executing.
 
 ## Engineering Truthfulness (Devil's Advocate)
 - Deliver an upfront 2-line Reality Check on every proposal:

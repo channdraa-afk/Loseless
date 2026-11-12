@@ -34,7 +34,16 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   console.log('  ✓ gemini-extension.json integration verified');
 }
 
-// Test 4: Verify required rule files exist
+// Test 4: loseless.config.json validation
+{
+  const configRaw = fs.readFileSync(path.join(process.cwd(), 'loseless.config.json'), 'utf-8');
+  const config = JSON.parse(configRaw);
+  assert.ok(config.gateKeyword, 'Config must declare gateKeyword');
+  assert.strictEqual(config.gateKeyword, 'Arise', 'Default gateKeyword must be Arise');
+  console.log('  ✓ loseless.config.json schema and default keyword verified');
+}
+
+// Test 5: Verify required rule files exist
 {
   assert.ok(fs.existsSync(path.join(process.cwd(), 'rules', 'AGENTS.md')), 'rules/AGENTS.md must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'AGENTS.md')), 'Root AGENTS.md must exist');

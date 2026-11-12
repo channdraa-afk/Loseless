@@ -78,3 +78,6 @@ c:\My Project\Loseless\
 - [x] Blast-Radius Protocol & Anti-Gaslighting Engine:
   - **Problem**: AI sering menciptakan regresi berantai (*collateral damage*) karena pandangan sempit saat mengedit file serta melakukan gaslighting dengan klaim manis palsu ("100% aman").
   - **Solution / State**: Mengintegrasikan protokol pelacak radius ledakan (Blast-Radius Tracing), kewajiban *Atomic Refactoring*, pelarangan mutlak klaim kepastian palsu (*Banned False Certainty*), serta kewajiban mencantumkan daftar *Residual Risks & Uncovered Edge Cases*.
+- [x] Configurable Arise Keyword & Gatekeeper Card Injection:
+  - **Problem**: Kebutuhan kustomisasi kata kunci otorisasi per-tim serta kewajiban agen menyisipkan kartu penjaga gerbang otomatis ber-branding Loseless di akhir setiap respons perencanaan.
+  - **Solution / State**: Mengimplementasikan `loseless.config.json`, klausul kartu gerbang otomatis di `rules/AGENTS.md` dan multi-platform adapters, serta pengujian skema di `tests/manifests.test.js`.
