@@ -184,7 +184,7 @@ function analyzePrompt(promptText, configOverride = null) {
 
 function readInputFromEnvironment() {
   if (process.argv[2]) {
-    return process.argv[2];
+    return process.argv.slice(2).join(' ');
   }
   if (process.env.USER_PROMPT) {
     return process.env.USER_PROMPT;
@@ -195,7 +195,7 @@ function readInputFromEnvironment() {
       if (piped) {
         try {
           const json = JSON.parse(piped.replace(/^\uFEFF/, ''));
-          return json.prompt || json.text || json.input || json.message || piped;
+          return json.lastUserInput || json.prompt || json.text || json.input || json.message || piped;
         } catch (e) {
           return piped.trim();
         }
@@ -209,7 +209,20 @@ function run() {
   const promptInput = readInputFromEnvironment();
   const result = analyzePrompt(promptInput);
   if (result.message) {
-    console.log(result.message);
+    if (process.stdout.isTTY) {
+      console.log(result.message);
+    } else {
+      const payload = {
+        injectSteps: [
+          {
+            systemMessage: {
+              systemMessage: result.message
+            }
+          }
+        ]
+      };
+      process.stdout.write(JSON.stringify(payload));
+    }
   }
 }
 

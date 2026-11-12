@@ -80,8 +80,9 @@ function readToolContext() {
       if (piped) {
         try {
           const json = JSON.parse(piped.replace(/^\uFEFF/, ''));
-          toolName = json.tool || json.tool_name || json.name || '';
-          targetFile = json.tool_input?.path || json.tool_input?.file_path || json.parameters?.path || json.parameters?.target || json.path || '';
+          // Antigravity standard toolCall structure vs generic
+          toolName = json.toolCall?.name || json.tool || json.tool_name || json.name || '';
+          targetFile = json.toolCall?.args?.Path || json.toolCall?.args?.path || json.tool_input?.path || json.tool_input?.file_path || json.parameters?.path || json.parameters?.target || json.path || '';
         } catch (e) {
           toolName = piped.trim();
         }
@@ -97,10 +98,21 @@ function run() {
 
   const check = checkToolAuthorization(toolName, targetFile);
   if (!check.allowed) {
+    if (!process.stdout.isTTY) {
+      process.stdout.write(JSON.stringify({
+        decision: 'deny',
+        reason: check.error
+      }));
+    }
     console.error(check.error);
     process.exit(1);
   }
 
+  if (!process.stdout.isTTY) {
+    process.stdout.write(JSON.stringify({
+      decision: 'allow'
+    }));
+  }
   process.exit(0);
 }
 

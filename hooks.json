@@ -1,0 +1,34 @@
+{
+  "loseless-session": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node hooks/loseless-activate.js",
+        "timeout": 5
+      }
+    ]
+  },
+  "loseless-tracker": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node hooks/loseless-mode-tracker.js",
+        "timeout": 5
+      }
+    ]
+  },
+  "loseless-gate": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/loseless-pretool.js",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
