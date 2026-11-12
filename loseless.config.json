@@ -1,6 +1,6 @@
 {
   "gateKeyword": "Arise",
-  "ariseMode": "adaptive",
+  "ariseMode": "strict",
   "fastTrackMicroDiffs": true,
   "strictMode": true,
   "cognitiveMode": "auto",

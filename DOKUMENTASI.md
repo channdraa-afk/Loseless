@@ -40,6 +40,12 @@ c:\My Project\Loseless\
 ├── loseless.config.json      # Konfigurasi runtime (ariseMode, gateKeyword)
 ├── README.md                 # Dokumentasi publik open-source
 ├── DOKUMENTASI.md            # Sub-Kitab SSOT Proyek (ADR-Lite)
+├── commands\
+│   ├── loseless.toml         # Antigravity slash command /loseless
+│   ├── loseless-debt.toml    # Antigravity slash command /loseless-debt
+│   ├── loseless-blast.toml   # Antigravity slash command /loseless-blast
+│   ├── loseless-critique.toml # Antigravity slash command /loseless-critique
+│   └── loseless-arise.toml   # Antigravity slash command /loseless-arise
 ├── hooks\
 │   ├── loseless-activate.js      # SessionStart activation hook
 │   ├── loseless-pretool.js       # PreToolUse physical write blocker (stdin/argv)
@@ -119,3 +125,10 @@ c:\My Project\Loseless\
     4. *Skill loseless-blast*: Menambahkan `skills/loseless-blast/SKILL.md` dan menyinkronkan seluruh dokumentasi skill.
     5. *Benchmark Telemetry Expansion*: Menambahkan benchmark throughput `blast-radius` ke `scripts/benchmark.js`.
     6. *Critical Config Isolation*: Memastikan file konfigurasi sensitif (`package.json`, `.env`, dll.) dikecualikan dari fast-track micro-diffs.
+- [x] Slash Commands UI Registry & Proactive Onboarding Directive (Engine v1.1.2):
+  - **Problem**: UI Antigravity menampilkan `No matching results` saat user mengetik `/loseless` karena ketiadaan berkas `.toml` di `commands/`, serta agen pasif tidak proaktif bertanya setup Arise Protocol pada repositori baru tanpa dipancing user.
+  - **Solution / State**:
+    1. *Antigravity Slash Commands*: Menambahkan 5 berkas `.toml` di `commands/` (`loseless.toml`, `loseless-debt.toml`, `loseless-blast.toml`, `loseless-critique.toml`, `loseless-arise.toml`) dan mengaktifkan `"loseless": { "enabled": true }` di `config.json`.
+    2. *Proactive Onboarding Directive*: `hooks/loseless-activate.js` kini otomatis menyuntikkan arahan darurat `PROACTIVE_ONBOARDING_REQUIRED` saat repositori belum memiliki `loseless.config.json`.
+    3. *Zero-Turn Axiom*: Aturan `rules/AGENTS.md` mewajibkan agen menyapa dan mengonfirmasi preferensi Arise pengguna pada giliran pertama sebelum memproses instruksi teknis.
+    4. *Calibration*: Menyimpan preferensi Chandra ke `loseless.config.json` (`ariseMode: "strict"`, `gateKeyword: "Arise"`).
