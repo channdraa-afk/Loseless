@@ -138,3 +138,9 @@ c:\My Project\Loseless\
     1. *Resmi Declaration (`plugins.json`)*: Menghapus junction Windows dan mendaftarkan path repositori secara legal via `~/.gemini/config/plugins.json` (`entries: [{"path": "c:/My Project/Loseless"}]`), diverifikasi langsung via gRPC `GetAllPlugins` (status: Loaded, 5 skills aktif).
     2. *Root Native `hooks.json`*: Menyediakan `hooks.json` resmi di root repositori yang memetakan event `SessionStart`, `PreInvocation`, dan `PreToolUse` ke scripts Node.js di `hooks/`.
     3. *Antigravity Stdout Contract*: Memperbarui `hooks/loseless-activate.js`, `hooks/loseless-mode-tracker.js`, dan `hooks/loseless-pretool.js` agar mendukung payload JSON standard Antigravity (`injectSteps`, `lastUserInput`, dan `{ decision: 'deny'/'allow' }`) secara mulus berdampingan dengan mode TTY.
+- [x] The Parsimony Ladder & Civilized Conciseness (Engine v1.2.0):
+  - **Problem**: Tabrakan arsitektur antara konsep Ponytail (minimalisasi kode namun sering malas membaca konteks dan berlagak sinis) dan Caveman (minimalisasi kata namun berbicara seperti manusia purba tanpa argumen arsitektural).
+  - **Solution / State**:
+    1. *The Parsimony Ladder (Code Domain)*: Menerapkan 5 anak tangga efisiensi kode di `rules/AGENTS.md` (Omission/YAGNI ➔ In-house reuse ➔ Platform native/stdlib ➔ Existing dependencies ➔ Surgical working diff).
+    2. *Civilized Conciseness (Response Domain)*: Menegakkan komunikasi Action-First di baris 1-3, melarang basa-basi AI slop ("Certainly!"), namun tetap mempertahankan penjelasan teknis presisi berbasis primitif komputasi (bukan bahasa gua).
+    3. *Clean Domain Separation*: Memisahkan logika kode, gaya komunikasi, gerbang fisik eksekusi (Arise), dan penghemat token (Blast-Radius) ke dalam satu kesatuan engine mandiri (*All-in-One Powerhouse*) berlisensi MIT.
