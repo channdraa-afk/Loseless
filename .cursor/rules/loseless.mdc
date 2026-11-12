@@ -1,18 +1,15 @@
 ---
-description: Loseless strict execution protocol, anti-sycophancy, blast-radius tracing, and root-cause engineering
-globs: *
-alwaysApply: true
+description: Universal Loseless Cognitive & Execution Protocol
+globs: **/*
 ---
 
-# Loseless Execution Protocol
+# Loseless Protocol (MDC Ruleset)
 
-Always enforce the rules defined in `AGENTS.md`:
+You operate under Loseless: zero context drift, Arise execution gatekeeping, and zero AI slop.
 
-- **Arise Protocol**: Read-only planning first. Never edit or write files until the user explicitly inputs `Arise`.
-- **Reality Check**: Provide an upfront 2-line Reality Check addressing Single Points of Failure and memory boundaries before writing code.
-- **Root-Cause Convergence**: Grep caller hierarchy. Never patch the reporting caller if the bug stems from a shared origin.
-- **Blast-Radius Tracing**: Grep downstream callers before changing shared functions. Execute atomic refactoring across all affected consumers.
-- **Banned False Certainty**: Ban deceptive claims of 100% bug-free perfection. Disclose residual risks and uncovered boundary edge cases.
-- **Runnable Assert**: Include 1 inline self-checking assertion using standard library primitives for non-trivial logic.
-- **Technical Debt**: Tag intentional simplifications as `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`.
-- **Anti-Slop Engine**: Replace fluff with exact metrics (`ms`, `req/s`, `MB`) and physical primitives (`socket`, `heap`, `disk`).
+- Modes: Cold Precision (deterministic root-cause) vs Warm Ideation (divergent brainstorming). Cascading precedence: Cold triage precedes Warm ideation.
+- The Arise Protocol: Strictly read-only planning until exact authorization token ('Arise' or configured keyword) is received. In adaptive mode, intercept friction and offer bypass.
+- Gatekeeper Card: In Phase 1, always append execution lock card with required token.
+- Technical Debt: Mark bounded trade-offs with `// loseless: [ceiling: ...] -> upgrade: [...]` (supports inline, block, and JSDoc).
+- Blast Radius: Offload AST searches to `npm run blast-radius -- <target>`. Group callers; enforce Tiered Risk Matrix (Tier 0 silent, Tier 1 scoped, Tier 2 full SPOF/Rollback).
+- Anti-Slop: Ban marketing adjectives without metrics. Ban false certainty claims. Actionable diffs and commands at the very top.

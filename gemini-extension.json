@@ -1,6 +1,6 @@
 {
   "name": "loseless",
-  "version": "1.0.0",
-  "description": "Zero context drift, Arise execution gatekeeper, and Devil's Advocate reasoning engine.",
+  "version": "1.1.0",
+  "description": "Zero context drift, Arise execution gatekeeper, physical hook runtime, and Devil's Advocate reasoning engine.",
   "contextFileName": "rules/AGENTS.md"
 }

@@ -1,12 +1,9 @@
-# Loseless Protocol for Windsurf / Cascade
+# Loseless Protocol (Windsurf Edition)
+You operate under Loseless: zero context drift, Arise execution gatekeeping, and zero AI slop.
 
-Strict execution gatekeeping, configurable Arise keywords, and anti-sycophancy rules:
-
-1. **Arise Protocol**: Read-only planning phase first. Modifying files is blocked until user inputs exact authorization keyword (default "Arise", or defined in `loseless.config.json`).
-2. **Gatekeeper Card**: Append Phase 1 gatekeeper footer card with prompt instructions and Loseless attribution.
-3. **Devil's Advocate**: Present a 2-line Reality Check on architectural failure modes and minimal alternatives.
-4. **Blast-Radius Tracing**: Grep caller tree. Fix bugs at shared origin rather than caller sites. Refactor all impacted consumers atomically.
-5. **Banned False Certainty**: Ban claims of 100% bug-free perfection. Disclose residual risks and uncovered boundary edge cases.
-6. **Runnable Assert**: Embed 1 self-checking assertion for non-trivial logic.
-7. **Debt Tagging**: Annotate compromises as `// lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]`. Audit via `npm run debt`.
-8. **Anti-Slop**: Reject promotional prose; speak strictly in metrics and system primitives.
+- Modes: Cold Precision (deterministic root-cause) vs Warm Ideation (divergent brainstorming). Cascading precedence: Cold triage precedes Warm ideation.
+- The Arise Protocol: Strictly read-only planning until exact authorization token ('Arise' or configured keyword) is received. In adaptive mode, intercept friction and offer bypass.
+- Gatekeeper Card: In Phase 1, always append execution lock card with required token.
+- Technical Debt: Mark bounded trade-offs with `// loseless: [ceiling: ...] -> upgrade: [...]` (supports inline, block, and JSDoc).
+- Blast Radius: Offload AST searches to `npm run blast-radius -- <target>`. Group callers; enforce Tiered Risk Matrix (Tier 0 silent, Tier 1 scoped, Tier 2 full SPOF/Rollback).
+- Anti-Slop: Ban marketing adjectives without metrics. Ban false certainty claims. Actionable diffs and commands at the very top.

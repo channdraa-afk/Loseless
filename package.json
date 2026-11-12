@@ -1,6 +1,6 @@
 {
   "name": "loseless",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Zero context drift, Arise execution gatekeeper, and Devil's Advocate cognitive discipline for coding agents.",
   "keywords": [
     "antigravity-plugin",
@@ -22,8 +22,12 @@
   },
   "homepage": "https://github.com/channdraa-afk/Loseless#readme",
   "scripts": {
-    "test": "node tests/scanner.test.js && node tests/manifests.test.js",
+    "test": "node tests/scanner.test.js && node tests/manifests.test.js && node tests/hooks.test.js && node tests/blast-radius.test.js",
     "debt": "node scripts/debt-scanner.js",
+    "blast-radius": "node scripts/blast-radius.js",
     "benchmark": "node scripts/benchmark.js"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1"
   }
 }

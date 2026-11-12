@@ -12,6 +12,7 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(pkg.version, 'Package must declare version');
   assert.ok(pkg.scripts && pkg.scripts.test, 'Package must declare test script');
   assert.ok(pkg.scripts && pkg.scripts.debt, 'Package must declare debt script');
+  assert.ok(pkg.scripts && pkg.scripts['blast-radius'], 'Package must declare blast-radius script');
   console.log('  ✓ package.json syntax and scripts verified');
 }
 
@@ -40,16 +41,20 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   const config = JSON.parse(configRaw);
   assert.ok(config.gateKeyword, 'Config must declare gateKeyword');
   assert.strictEqual(config.gateKeyword, 'Arise', 'Default gateKeyword must be Arise');
+  assert.ok(config.ariseMode, 'Config must declare ariseMode');
   console.log('  ✓ loseless.config.json schema and default keyword verified');
 }
 
-// Test 5: Verify required rule files exist
+// Test 5: Verify required rule files and hook manifests exist
 {
   assert.ok(fs.existsSync(path.join(process.cwd(), 'rules', 'AGENTS.md')), 'rules/AGENTS.md must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'AGENTS.md')), 'Root AGENTS.md must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), '.cursorrules')), '.cursorrules must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'CLAUDE.md')), 'CLAUDE.md must exist');
-  console.log('  ✓ Multi-platform rule adapter files verified');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'claude-codex-hooks.json')), 'claude-codex-hooks.json must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'cursor-hooks.json')), 'cursor-hooks.json must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'sentiment-patterns.json')), 'sentiment-patterns.json must exist');
+  console.log('  ✓ Multi-platform rule adapter files and physical hook manifests verified');
 }
 
 console.log('All Manifest Integrity Tests Passed Successfully.\n');
