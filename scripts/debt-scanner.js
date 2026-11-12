@@ -3,7 +3,7 @@
 /**
  * Loseless Technical Debt Scanner
  * Zero-dependency CLI scanner for harvesting intentional technical debt annotations.
- * Syntax: // lossless: [ceiling: <LIMIT>] -> upgrade: [<ACTION>]
+ * Supports inline comments, block comments, and multiline JSDoc blocks.
  */
 
 const fs = require('fs');
@@ -26,7 +26,11 @@ const SUPPORTED_EXTENSIONS = new Set([
   '.html', '.css', '.scss', '.yaml', '.yml', '.md'
 ]);
 
-const DEBT_REGEX = /(?:\/\/|#|--|\/\*)\s*lossless:\s*\[ceiling:\s*([^\]]+)\]\s*->\s*upgrade:\s*\[([^\]]+)\]/i;
+// Original standard regex with support for both lossless/loseless and arrow variants:
+const DEBT_REGEX = /(?:\/\/|#|--|\/\*)\s*(?:lossless|loseless):\s*\[ceiling:\s*([^\]]+)\]\s*(?:->|=>|-->|➔)\s*upgrade:\s*\[([^\]]+)\]/i;
+
+// Resilient inline regex supporting missing brackets, whitespace, and alternate styles:
+const INLINE_DEBT_REGEX = /(?:\/\/|#|--|\/\*)\s*@?(?:loseless|lossless):\s*\[?(?:ceiling:\s*)?([^\]\-\=\➔\n]+?)\]?\s*(?:->|=>|-->|➔)\s*\[?(?:upgrade:\s*)?([^\]\n\*\r]+?)\]?(?:\s*\*\/)?/i;
 
 function walk(dir, results = []) {
   let list;
@@ -67,17 +71,72 @@ function scanFile(filePath, results) {
   }
 
   const lines = content.split('\n');
-  lines.forEach((line, index) => {
-    const match = line.match(DEBT_REGEX);
-    if (match) {
+  let inJsDoc = false;
+  let jsDocStartLine = 0;
+  let jsDocCeiling = null;
+  let jsDocUpgrade = null;
+
+  for (let index = 0; index < lines.length; index++) {
+    const rawLine = lines[index];
+    const trimmed = rawLine.trim();
+
+    // Check for JSDoc multiline blocks
+    if (trimmed.startsWith('/**')) {
+      inJsDoc = true;
+      jsDocStartLine = index + 1;
+      jsDocCeiling = null;
+      jsDocUpgrade = null;
+    }
+
+    if (inJsDoc) {
+      const ceilingMatch = trimmed.match(/(?:\*|\/\/)?\s*ceiling:\s*\[?([^\]\r\n]+)\]?/i);
+      if (ceilingMatch && !jsDocCeiling) {
+        jsDocCeiling = ceilingMatch[1].trim();
+      }
+      const upgradeMatch = trimmed.match(/(?:\*|\/\/)?\s*upgrade:\s*\[?([^\]\r\n]+)\]?/i);
+      if (upgradeMatch && !jsDocUpgrade) {
+        jsDocUpgrade = upgradeMatch[1].trim();
+      }
+
+      if (trimmed.endsWith('*/')) {
+        inJsDoc = false;
+        if (jsDocCeiling && jsDocUpgrade) {
+          results.push({
+            file: path.relative(process.cwd(), filePath).replace(/\\/g, '/'),
+            line: jsDocStartLine,
+            ceiling: jsDocCeiling,
+            upgrade: jsDocUpgrade
+          });
+        }
+        jsDocCeiling = null;
+        jsDocUpgrade = null;
+      }
+      continue;
+    }
+
+    // Standard format scan
+    const legacyMatch = rawLine.match(DEBT_REGEX);
+    if (legacyMatch) {
       results.push({
         file: path.relative(process.cwd(), filePath).replace(/\\/g, '/'),
         line: index + 1,
-        ceiling: match[1].trim(),
-        upgrade: match[2].trim()
+        ceiling: legacyMatch[1].trim(),
+        upgrade: legacyMatch[2].trim()
+      });
+      continue;
+    }
+
+    // Flexible inline comment scan
+    const inlineMatch = rawLine.match(INLINE_DEBT_REGEX);
+    if (inlineMatch && (rawLine.includes('->') || rawLine.includes('=>') || rawLine.includes('-->') || rawLine.includes('➔'))) {
+      results.push({
+        file: path.relative(process.cwd(), filePath).replace(/\\/g, '/'),
+        line: index + 1,
+        ceiling: inlineMatch[1].replace(/^ceiling:\s*/i, '').trim(),
+        upgrade: inlineMatch[2].replace(/^upgrade:\s*/i, '').trim()
       });
     }
-  });
+  }
 }
 
 function run() {
@@ -113,4 +172,4 @@ if (require.main === module) {
   run();
 }
 
-module.exports = { walk, scanFile, DEBT_REGEX };
+module.exports = { walk, scanFile, DEBT_REGEX, INLINE_DEBT_REGEX };

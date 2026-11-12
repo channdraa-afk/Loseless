@@ -1,7 +1,9 @@
 const assert = require('assert');
-const { DEBT_REGEX, walk, scanFile } = require('../scripts/debt-scanner.js');
+const fs = require('fs');
+const path = require('path');
+const { DEBT_REGEX, INLINE_DEBT_REGEX, walk, scanFile } = require('../scripts/debt-scanner.js');
 
-console.log('Running Loseless Scanner Test Suite...');
+console.log('Running Loseless Scanner Test Suite (Multi-Syntax)...');
 
 // Test 1: Regex matches JavaScript/TypeScript format
 {
@@ -33,15 +35,55 @@ console.log('Running Loseless Scanner Test Suite...');
   console.log('  ✓ SQL comment syntax verified');
 }
 
-// Test 4: Regex ignores standard comments
+// Test 4: Flexible Arrow and Case-Insensitive Inline Syntax
+{
+  const testLines = [
+    '// loseless: [ceiling: 100 conns] => upgrade: [connection pooler]',
+    '// LOSELESS: [ceiling: 100 conns] --> upgrade: [connection pooler]',
+    '/* loseless: [ceiling: 100 conns] ➔ upgrade: [connection pooler] */'
+  ];
+
+  testLines.forEach((tl, idx) => {
+    const match = tl.match(INLINE_DEBT_REGEX) || tl.match(DEBT_REGEX);
+    assert.ok(match, `Flexible line #${idx + 1} must match`);
+    console.log(`  ✓ Flexible inline arrow variant #${idx + 1} verified`);
+  });
+}
+
+// Test 5: Multiline JSDoc parsing via scanFile
+{
+  const tempTestPath = path.join(__dirname, 'temp-jsdoc-sample.js');
+  const sampleContent = `
+/**
+ * Sample worker
+ * @loseless
+ * ceiling: 1000 items in memory
+ * upgrade: stream chunking pipeline
+ */
+function worker() {}
+`;
+  fs.writeFileSync(tempTestPath, sampleContent, 'utf-8');
+  const results = [];
+  scanFile(tempTestPath, results);
+  try {
+    fs.unlinkSync(tempTestPath);
+  } catch (e) {}
+
+  assert.strictEqual(results.length, 1, 'JSDoc block must produce exactly 1 debt item');
+  assert.strictEqual(results[0].ceiling, '1000 items in memory');
+  assert.strictEqual(results[0].upgrade, 'stream chunking pipeline');
+  console.log('  ✓ Multiline JSDoc block debt parsing verified');
+}
+
+// Test 6: False-positive prevention
 {
   const line = '// TODO: fix later';
-  const match = line.match(DEBT_REGEX);
+  const match = line.match(DEBT_REGEX) || line.match(INLINE_DEBT_REGEX);
   assert.strictEqual(match, null, 'Standard TODO comments must be ignored');
   console.log('  ✓ False-positive prevention verified');
 }
 
-// Test 5: End-to-end repository scan finds items
+// Test 7: End-to-end repository scan finds items
 {
   const debts = walk(process.cwd());
   assert.ok(Array.isArray(debts), 'Walk must return an array');
