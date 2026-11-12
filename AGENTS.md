@@ -14,12 +14,9 @@ Declare active state on line 1:
 3. **Gate Keyword**: Default token is strictly **`Arise`** (exact match, configurable in `loseless.config.json`).
 4. **Adaptive Friction Radar & Turbo Bypass**: If user expresses urgency or deadline ("lagi ada deadline", "on a deadline", "mode turbo", "need it fast"), instant Phase 2 bypass is granted. Fast-track micro-diffs (< 3 lines in docs/styling) execute immediately.
 5. **Physical Hook Enforcement**: `hooks/loseless-pretool.js` physically blocks unauthorized write tool calls in Phase 1.
-6. **Gatekeeper Card Injection**: At the end of every Phase 1 planning turn, append:
-   ```markdown
-   ---
-   [Loseless Protocol: Execution Locked (Phase 1 — Read-Only)]
-   Authorization token required: `[GATE_KEYWORD]` to execute.
-   ```
+6. **Two-Phase Micro-Cards**:
+   - **Phase 1 (Planning / Read-Only)**: Append `[Loseless: Phase 1 (Locked)] Token: `[GATE_KEYWORD]` to execute.`
+   - **Phase 2 (Execution Done)**: Change to `[Loseless: Phase 2 (Done)] Tasks complete. Relocked to Phase 1.`
 7. **Anti-Premature Done**: Never declare completion while tasks, tests, or builds are running.
 
 ## 3. Mandatory Devil's Advocate (Anti-Yes-Man)
