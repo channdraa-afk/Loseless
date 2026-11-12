@@ -289,11 +289,15 @@ Empirical measurements verified directly against Google's official tokenizer end
 
 | Command | Purpose |
 | :--- | :--- |
+| `loseless status` | Inspects Arise gatekeeper state and configuration via Go native core (< 1ms). |
+| `loseless gate <action>` | Manages physical execution gate state natively (`unlock`, `relock`, `bypass`). |
+| `loseless blast <sym>` | Concurrent Goroutine AST scanner traversing multi-language references in parallel. |
 | `npm test` | Runs the full test suite (Scanner, Manifests, Physical Hooks, Blast-Radius). |
 | `npm run debt` | Executes local high-speed multi-syntax technical debt harvester. |
 | `npm run blast-radius -- <sym>` | Computes blast-radius caller telemetry without LLM token waste. |
 | `npm run benchmark` | Executes 100-run performance & token density benchmark suite. |
 | `npm run benchmark:py` | Executes Python-based empirical evaluation harness across 6 engineering scenarios. |
+| `npm run benchmark:live` | Evaluates live token counts in real time directly via Google Gemini API. |
 
 ---
 

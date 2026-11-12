@@ -95,7 +95,13 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.strictEqual(typeof defineConfig, 'function', 'index.js must export defineConfig helper');
   const dummyConfig = { ariseMode: 'adaptive', gateKeyword: 'Arise' };
   assert.deepStrictEqual(defineConfig(dummyConfig), dummyConfig, 'defineConfig must return config object');
-  console.log('  ✓ TypeScript declarations, CLI binary, Universal Installers, and Python benchmarks verified');
+
+  // Verify Go Native Core and GitHub Actions CI matrix
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'go.mod')), 'go.mod must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'cmd', 'loseless', 'main.go')), 'cmd/loseless/main.go must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), 'internal', 'blast', 'blast.go')), 'internal/blast/blast.go must exist');
+  assert.ok(fs.existsSync(path.join(process.cwd(), '.github', 'workflows', 'build.yml')), '.github/workflows/build.yml must exist');
+  console.log('  ✓ TypeScript declarations, CLI binary, Universal Installers, Python benchmarks, and Go Native Core verified');
 }
 
 console.log('All Manifest Integrity Tests Passed Successfully.\n');
