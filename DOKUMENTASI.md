@@ -144,3 +144,9 @@ c:\My Project\Loseless\
     1. *The Parsimony Ladder (Code Domain)*: Menerapkan 5 anak tangga efisiensi kode di `rules/AGENTS.md` (Omission/YAGNI ➔ In-house reuse ➔ Platform native/stdlib ➔ Existing dependencies ➔ Surgical working diff).
     2. *Civilized Conciseness (Response Domain)*: Menegakkan komunikasi Action-First di baris 1-3, melarang basa-basi AI slop ("Certainly!"), namun tetap mempertahankan penjelasan teknis presisi berbasis primitif komputasi (bukan bahasa gua).
     3. *Clean Domain Separation*: Memisahkan logika kode, gaya komunikasi, gerbang fisik eksekusi (Arise), dan penghemat token (Blast-Radius) ke dalam satu kesatuan engine mandiri (*All-in-One Powerhouse*) berlisensi MIT.
+- [x] Ergonomic Command Taxonomy & Deep Security Triage (Engine v1.3.0):
+  - **Problem**: Nomenklatur perintah sebelumnya (`blast`, `critique`, `arise`) terlalu kriptik dan elitis bagi pemula, serta absennya command khusus untuk menginvestigasi celah keamanan (seperti hasil inspeksi Burp Suite/API) yang sering memicu salah tebak antara celah frontend vs backend.
+  - **Solution / State**:
+    1. *Action-Evident Command Suite*: Menyediakan 6 perintah baru yang intuitif (`/loseless-clean`, `/loseless-trace`, `/loseless-impact`, `/loseless-review`, `/loseless-gate`, `/loseless-help`) berdampingan dengan alias backward-compatibility (`blast`, `critique`, `arise`).
+    2. *Deep Security Triage Protocol (`/loseless-trace`)*: Menerapkan 5-Layer Deep Security Triage Engine yang mendikotomikan symptom vs root-cause, memetakan wire HTTP ke kode server/DB, serta menghasilkan 1 runnable proof-of-fix assertion.
+    3. *Language Server Sync*: Seluruh 11 skill diverifikasi aktif via gRPC `GetAllPlugins` dan seluruh manifest integrity test suite lulus 100%.
