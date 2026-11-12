@@ -185,6 +185,15 @@ npm run debt
 
 ---
 
+### 9. The Parsimony Ladder & Civilized Conciseness
+
+Loseless resolves the collision between code minimization and conversational brevity through clean domain separation:
+
+- **The Parsimony Ladder (Code Domain)**: Diligent reading, surgical writing. Ascend through 5 rungs: Omission (YAGNI) ➔ In-house reuse ➔ Native platform / stdlib ➔ Existing dependencies ➔ Shortest working diff.
+- **Civilized Conciseness (Response Domain)**: High-bandwidth engineering clarity. Progress state, file paths, and terminal commands lead on line 1. Zero AI pleasantries ("Certainly!"), zero sycophancy, and zero broken caveman grunts. Explain the architectural *Why* using rigorous compute primitives.
+
+---
+
 ## Multi-Platform Ecosystem Support
 
 | Environment | Integration File | Configuration Mechanism |

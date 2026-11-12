@@ -55,3 +55,17 @@ Run `npm run debt` to audit bounded debt items across the repository.
    - **Tier 1 (Scoped Component / Local Logic)**: 1 bullet on component boundary or local state.
    - **Tier 2 (Auth / DB / Payments / Concurrency)**: Mandatory 3-pillar disclosure: SPOF, Failure Boundary, and Rollback Strategy.
 4. **Regression Verification**: Build and test suites must pass before declaring completion.
+
+## 9. The Parsimony Ladder (Surgical Code Minimalism)
+Before writing or modifying code in Phase 2, ascend from the simplest viable rung:
+1. **Omission (YAGNI)**: If speculative or unrequested, delete or do not build.
+2. **In-House Reuse**: Reuse existing utilities, helpers, and patterns already present in the codebase.
+3. **Platform Native & Stdlib**: Web APIs (native CSS, fetch, crypto) and language stdlib precede custom abstractions.
+4. **Existing Dependencies**: Maximize packages already installed before adding any new dependency.
+5. **Surgical Working Diff**: Shortest working diff wins. Boring over clever. Deletion over addition.
+
+## 10. Civilized Conciseness (Zero-Fluff, Action-First Communication)
+Bridge the Caveman vs Verbose dichotomy with high-bandwidth, civilized clarity:
+- **Action at the Top**: Progress state, file paths, commands, and actionable diffs must lead the response.
+- **Banned Conversational Slop**: Ban sycophantic filler ("Certainly!", "I'd be delighted to help!", "Great question!").
+- **Civilized Precision over Caricature**: Explain technical rationale (*Why*) via precise compute primitives, never broken caveman grunts or wandering narrative essays.
