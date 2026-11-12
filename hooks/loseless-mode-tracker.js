@@ -21,14 +21,42 @@ const DEFAULT_CONFIG = {
 };
 
 function getSessionFilePath() {
-  const sessionDir =
-    process.env.LOSELESS_SESSION_DIR || path.join(process.cwd(), ".loseless");
-  if (!fs.existsSync(sessionDir)) {
+  if (process.env.LOSELESS_SESSION_DIR) {
+    const dir = process.env.LOSELESS_SESSION_DIR;
+    if (!fs.existsSync(dir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (e) {}
+    }
+    return path.join(dir, "session.json");
+  }
+
+  const pluginSession = path.join(
+    path.resolve(__dirname, ".."),
+    ".loseless",
+    "session.json"
+  );
+  const cwdSession = path.join(process.cwd(), ".loseless", "session.json");
+
+  // If both exist, return the one updated most recently
+  if (fs.existsSync(cwdSession) && fs.existsSync(pluginSession) && cwdSession !== pluginSession) {
     try {
-      fs.mkdirSync(sessionDir, { recursive: true });
+      const cwdMtime = fs.statSync(cwdSession).mtimeMs;
+      const pluginMtime = fs.statSync(pluginSession).mtimeMs;
+      return pluginMtime >= cwdMtime ? pluginSession : cwdSession;
     } catch (e) {}
   }
-  return path.join(sessionDir, "session.json");
+
+  if (fs.existsSync(cwdSession)) return cwdSession;
+  if (fs.existsSync(pluginSession)) return pluginSession;
+
+  const defaultDir = path.join(process.cwd(), ".loseless");
+  if (!fs.existsSync(defaultDir)) {
+    try {
+      fs.mkdirSync(defaultDir, { recursive: true });
+    } catch (e) {}
+  }
+  return path.join(defaultDir, "session.json");
 }
 
 function loadConfig() {
@@ -71,9 +99,20 @@ function loadSession() {
 
 function saveSession(session) {
   try {
-    const filePath = getSessionFilePath();
     session.updatedAt = Date.now();
+    const filePath = getSessionFilePath();
     fs.writeFileSync(filePath, JSON.stringify(session, null, 2), "utf-8");
+
+    // Mirror to sibling/parent session location if it exists to maintain cross-workspace sync
+    if (!process.env.LOSELESS_SESSION_DIR) {
+      const pluginSession = path.join(path.resolve(__dirname, ".."), ".loseless", "session.json");
+      const cwdSession = path.join(process.cwd(), ".loseless", "session.json");
+      if (filePath === pluginSession && fs.existsSync(path.dirname(cwdSession))) {
+        fs.writeFileSync(cwdSession, JSON.stringify(session, null, 2), "utf-8");
+      } else if (filePath === cwdSession && fs.existsSync(path.dirname(pluginSession))) {
+        fs.writeFileSync(pluginSession, JSON.stringify(session, null, 2), "utf-8");
+      }
+    }
   } catch (e) {}
 }
 

@@ -1,6 +1,20 @@
-# GitHub Linguist Language Detection Configuration
+# GitHub Linguist Multi-Language Breakdown Configuration
 benchmarks/*.py linguist-detectable=true
+benchmarks/*.py linguist-documentation=false
 benchmarks/*.py linguist-vendored=false
+
 types/*.d.ts linguist-detectable=true
+types/*.d.ts linguist-documentation=false
+types/*.d.ts linguist-vendored=false
+
 install.sh linguist-detectable=true
+install.sh linguist-documentation=false
+
 install.ps1 linguist-detectable=true
+install.ps1 linguist-documentation=false
+
+cmd/**/*.go linguist-detectable=true
+cmd/**/*.go linguist-documentation=false
+
+internal/**/*.go linguist-detectable=true
+internal/**/*.go linguist-documentation=false
