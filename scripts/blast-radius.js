@@ -80,7 +80,9 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
   const references = [];
   const moduleCounts = new Map();
 
-  const regex = new RegExp(`\\b${targetSymbol.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'g');
+  // Universal word-boundary lookaround supporting standard words and special prefixes ($, @, #)
+  const escaped = targetSymbol.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const regex = new RegExp(`(?<![a-zA-Z0-9_])${escaped}(?![a-zA-Z0-9_])`, 'g');
 
   for (const file of files) {
     let content;
@@ -92,6 +94,8 @@ function calculateBlastRadius(targetSymbol, baseDir = process.cwd()) {
 
     const lines = content.split('\n');
     lines.forEach((line, index) => {
+      // Reset regex index for global regexes
+      regex.lastIndex = 0;
       if (regex.test(line)) {
         const relPath = path.relative(baseDir, file).replace(/\\/g, '/');
         const parts = relPath.split('/');
