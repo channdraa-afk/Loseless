@@ -21,6 +21,11 @@
     "url": "https://github.com/channdraa-afk/Loseless/issues"
   },
   "homepage": "https://github.com/channdraa-afk/Loseless#readme",
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "bin": {
+    "loseless": "bin/loseless.js"
+  },
   "scripts": {
     "test": "node tests/scanner.test.js && node tests/manifests.test.js && node tests/hooks.test.js && node tests/blast-radius.test.js",
     "debt": "node scripts/debt-scanner.js",
