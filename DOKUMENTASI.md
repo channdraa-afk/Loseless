@@ -204,3 +204,9 @@ c:\My Project\Loseless\
     2. *Windows Lock Retry Backoff*: Menambahkan loop retry 3x dengan micro-sleep backoff untuk mengatasi interupsi file-locking Windows Defender/Indexers.
     3. *Path Traversal Defense*: Menormalisasi seluruh `targetFile` dengan `path.resolve(process.cwd(), targetFile)` pada `hooks/loseless-pretool.js` untuk mendeteksi penyamaran path kritis (misal: `./sub/../package.json`).
     4. *Self-Healing Corrupted Session*: Mengkarantina otomatis file sesi rusak ke `.corrupt.<time>` dan me-reset sesi sehat secara instan. Seluruh 4 test suite lulus 100%.
+- [x] Standardisasi Golden 8-Block README & Topologi Repositori:
+  - **Problem**: Ketiadaan pohon arsitektur repositori polyglot dan spesifikasi runtime minimum pada README publik Loseless, serta ketiadaan template terstandarisasi untuk portofolio proyek Chandra.
+  - **Solution / State**:
+    1. *Pohon Topologi Polyglot (`README.md`)*: Menambahkan pemetaan ASCII direktori `cmd/`, `internal/`, `hooks/`, `rules/`, `benchmarks/`, `types/`, dan `bin/` pada README Loseless.
+    2. *Spesifikasi System Requirements*: Mendokumentasikan persyaratan runtime Node.js >= 18.x, Go >= 1.22, dan Python >= 3.10.
+    3. *Master Blueprint (`GEMINI.md`)*: Memformalkan *The Golden 8-Block README Blueprint* ke dalam Bagian 5 Kitab Induk sebagai pedoman universal seumur hidup. Seluruh 4 test suite lulus 100%.

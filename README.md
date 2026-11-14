@@ -64,6 +64,12 @@ loseless status
 loseless help
 ```
 
+### System Requirements & Prerequisites
+- **Pre-compiled Binaries ([GitHub Releases](https://github.com/channdraa-afk/Loseless/releases))**: Zero dependencies. No Node.js or Go required.
+- **Node.js Plugin & Hook Suite**: Node.js $\ge$ 18.x (LTS recommended).
+- **Go Native Core (Building from Source)**: Go $\ge$ 1.22.
+- **Python Benchmark Harness**: Python $\ge$ 3.10 (Standard Library only, zero pip dependencies).
+
 ---
 
 ## Core Architectural Pillars
@@ -282,6 +288,41 @@ Empirical measurements verified directly against Google's official tokenizer end
 - **Code Diff Bloat Reduction**: **87.92% less code**
 - **Harness Latency**: **0.07 ms** (near-zero CPU overhead)
 - **Safety Gate Compliance**: **100% adherence** (0 unauthorized edits in Phase 1)
+
+---
+
+## Repository Architecture Topology
+
+```text
+loseless/
+├── cmd/
+│   └── loseless/            # Go Native Core CLI entrypoint (< 1ms execution)
+├── internal/
+│   └── blast/               # Multi-language Goroutine concurrent AST scanner
+├── hooks/
+│   ├── loseless-activate.js # SessionStart lifecycle hook
+│   ├── loseless-mode-tracker.js # UserPromptSubmit sentiment & gatekeeper tracker
+│   ├── loseless-pretool.js  # PreToolUse physical write blocker
+│   └── sentiment-patterns.json # Local zero-token friction & urgency patterns
+├── rules/
+│   ├── AGENTS.md            # Full Loseless Core rules (1,177 tokens)
+│   └── LOSELESS_LITE.md     # Loseless Zero rules (< 240 tokens)
+├── benchmarks/              # Empirical evaluation suite & live Gemini tokenizer
+│   ├── eval_runner.py       # Benchmark runner with --live Gemini API support
+│   ├── tasks.py             # 6 standardized software engineering tasks
+│   └── metrics.py           # Statistical token, completion, and parsimony metrics
+├── types/                   # TypeScript static type declarations & contracts
+│   └── index.d.ts           # LoselessConfig, AriseMode, and BlastRadiusResult
+├── scripts/                 # Standalone developer tools (debt & blast scanners)
+├── tests/                   # Zero-regression automated unit test suite
+├── install.ps1              # Universal 1-click Windows PowerShell installer
+├── install.sh               # Universal 1-click POSIX Shell installer
+├── AGENTS_LITE.md           # Single-file prompt standard (331 tokens)
+├── CLAUDE.md                # Claude Code integration manifest
+├── .cursorrules             # Cursor IDE always-on rules
+├── go.mod                   # Go module definition
+└── package.json             # Node.js package manifest & CLI bin
+```
 
 ---
 
