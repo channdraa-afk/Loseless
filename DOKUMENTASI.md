@@ -42,10 +42,13 @@ c:\My Project\Loseless\
 ├── DOKUMENTASI.md            # Sub-Kitab SSOT Proyek (ADR-Lite)
 ├── commands\
 │   ├── loseless.toml         # Antigravity slash command /loseless
-│   ├── loseless-debt.toml    # Antigravity slash command /loseless-debt
+│   ├── loseless-gate.toml    # Antigravity slash command /loseless-gate
 │   ├── loseless-blast.toml   # Antigravity slash command /loseless-blast
+│   ├── loseless-debt.toml    # Antigravity slash command /loseless-debt
+│   ├── loseless-clean.toml   # Antigravity slash command /loseless-clean
 │   ├── loseless-critique.toml # Antigravity slash command /loseless-critique
-│   └── loseless-arise.toml   # Antigravity slash command /loseless-arise
+│   ├── loseless-browse.toml  # Antigravity slash command /loseless-browse
+│   └── loseless-help.toml    # Antigravity slash command /loseless-help
 ├── hooks\
 │   ├── loseless-activate.js      # SessionStart activation hook
 │   ├── loseless-pretool.js       # PreToolUse physical write blocker (stdin/argv)
@@ -65,11 +68,14 @@ c:\My Project\Loseless\
 │   ├── hooks.test.js         # Test suite penegakan fisik runtime hooks & auto-relock
 │   └── blast-radius.test.js  # Test suite pelacak radius ledakan lookaround
 ├── skills\
-│   ├── loseless\SKILL.md     # Command /loseless [cold|warm|status]
+│   ├── loseless\SKILL.md     # Command /loseless cognitive mode switcher
+│   ├── loseless-gate\SKILL.md # Arise gatekeeper inspector & manager
+│   ├── loseless-blast\SKILL.md # AST reference aggregator skill
 │   ├── loseless-debt\SKILL.md # Harvester tag "// loseless:"
+│   ├── loseless-clean\SKILL.md # Parsimony Hunter code bloat auditor
 │   ├── loseless-critique\SKILL.md # One-shot Devil's Advocate review
-│   ├── loseless-arise\SKILL.md # Two-phase execution gatekeeper
-│   └── loseless-blast\SKILL.md # AST reference aggregator skill
+│   ├── loseless-browse\SKILL.md # Web Arise a11y browser automation skill
+│   └── loseless-help\SKILL.md # Cheat sheet quick reference guide
 └── assets\
     └── logo.svg              # Logo visual minimalis
 ```
@@ -210,3 +216,9 @@ c:\My Project\Loseless\
     1. *Pohon Topologi Polyglot (`README.md`)*: Menambahkan pemetaan ASCII direktori `cmd/`, `internal/`, `hooks/`, `rules/`, `benchmarks/`, `types/`, dan `bin/` pada README Loseless.
     2. *Spesifikasi System Requirements*: Mendokumentasikan persyaratan runtime Node.js >= 18.x, Go >= 1.22, dan Python >= 3.10.
     3. *Master Blueprint (`GEMINI.md`)*: Memformalkan *The Golden 8-Block README Blueprint* ke dalam Bagian 5 Kitab Induk sebagai pedoman universal seumur hidup. Seluruh 4 test suite lulus 100%.
+- [x] Streamlining Slash Command Suite & Integrasi `/loseless-browse` (Web Arise Protocol):
+  - **Problem**: Menu autocomplete slash command Antigravity mengalami bloat akibat command alias redundant (`loseless-impact`, `loseless-review`, `loseless-arise`) dan command spesifik niche (`loseless-trace`), serta ketiadaan tool otomatisasi browser hemat token yang mematuhi physical write gatekeeper.
+  - **Solution / State**:
+    1. *Eliminasi Command Bloat*: Menghapus 4 alias redundant (`loseless-impact.toml`, `loseless-review.toml`, `loseless-arise.toml`, `loseless-trace.toml`) beserta folder skills-nya, merampingkan suite menjadi 8 komando inti yang bersih.
+    2. *Web Arise Protocol (`commands/loseless-browse.toml`, `skills/loseless-browse/SKILL.md`)*: Mengadopsi arsitektur browser automation ala `vercel-labs/agent-browser` (ref `@e1`, `@e2` berbasis accessibility tree, hemat token 90%+ dibanding raw DOM/screenshot) dengan physical mutation barrier di Phase 1 (evaluating & clicking state form terproteksi hingga `Arise`).
+    3. *System Message Relock Guard (`hooks/loseless-mode-tracker.js`)*: Mengabaikan pesan internal sistem IDE (`[Message]`, `[Notice]`, `<SYSTEM_MESSAGE>`) agar tidak memicu auto-relock prematur ke Phase 1 di tengah giliran aktif. Seluruh 4 test suite lulus 100%.

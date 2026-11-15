@@ -299,6 +299,8 @@ loseless/
 │   └── loseless/            # Go Native Core CLI entrypoint (< 1ms execution)
 ├── internal/
 │   └── blast/               # Multi-language Goroutine concurrent AST scanner
+├── commands/                # Clean 8-command Antigravity UI slash suite
+├── skills/                  # Autonomous specialized skill bundles (browse, blast, debt...)
 ├── hooks/
 │   ├── loseless-activate.js # SessionStart lifecycle hook
 │   ├── loseless-mode-tracker.js # UserPromptSubmit sentiment & gatekeeper tracker
@@ -327,6 +329,21 @@ loseless/
 ---
 
 ## Command Reference & Scripts
+
+### Antigravity Slash Commands (Ergonomic 8-Suite)
+
+| Slash Command | Purpose |
+| :--- | :--- |
+| `/loseless` | Dynamic cognitive mode switcher (`focus`, `idea`, `strict`). |
+| `/loseless-gate` | Physical Arise Protocol execution gatekeeper inspector and manager. |
+| `/loseless-blast` | Multi-language AST blast-radius analyzer preserving 95%+ tokens. |
+| `/loseless-debt` | Technical debt harvester scanning all `// loseless:` annotations. |
+| `/loseless-clean` | Audits codebase for bloat, dead code, and dependencies (*Parsimony Hunter*). |
+| `/loseless-critique` | Ruthless Devil's Advocate architectural review (*Anti-Yes-Man*). |
+| `/loseless-browse` | Token-efficient headless browser inspection with Web Arise mutation barrier. |
+| `/loseless-help` | Quick-reference cheat sheet for all commands and modes. |
+
+### CLI & Development Scripts
 
 | Command | Purpose |
 | :--- | :--- |
