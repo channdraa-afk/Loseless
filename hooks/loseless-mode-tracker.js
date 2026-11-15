@@ -206,10 +206,21 @@ function loadPatterns() {
 function analyzePrompt(promptText, configOverride = null) {
   if (!promptText || typeof promptText !== "string") return { action: "none" };
 
-  const config = configOverride || loadConfig();
-  const session = loadSession();
-  const patterns = loadPatterns();
   const trimmed = promptText.trim();
+  const session = loadSession();
+
+  // Ignore system notifications, background task messages, and IDE notices
+  if (
+    trimmed.startsWith("[Message]") ||
+    trimmed.startsWith("[Notice]") ||
+    trimmed.startsWith("<SYSTEM_MESSAGE>") ||
+    trimmed.startsWith("The following is a <SYSTEM_MESSAGE>")
+  ) {
+    return { action: "none", phase: session.phase };
+  }
+
+  const config = configOverride || loadConfig();
+  const patterns = loadPatterns();
   const lower = trimmed.toLowerCase();
 
   // 1. Exact match for gate keyword (Case-Sensitive exact match per Rule 2.1)
