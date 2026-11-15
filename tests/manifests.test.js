@@ -57,11 +57,10 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks', 'sentiment-patterns.json')), 'sentiment-patterns.json must exist');
   assert.ok(fs.existsSync(path.join(process.cwd(), 'hooks.json')), 'Root hooks.json must exist');
 
-  // Verify skills (core + ergonomic suite + aliases)
+  // Verify skills (streamlined 8-suite)
   const requiredSkills = [
-    'loseless', 'loseless-debt', 'loseless-clean', 'loseless-trace',
-    'loseless-impact', 'loseless-review', 'loseless-gate', 'loseless-help',
-    'loseless-blast', 'loseless-critique', 'loseless-arise'
+    'loseless', 'loseless-gate', 'loseless-blast', 'loseless-debt',
+    'loseless-clean', 'loseless-critique', 'loseless-browse', 'loseless-help'
   ];
   requiredSkills.forEach(skill => {
     assert.ok(fs.existsSync(path.join(process.cwd(), 'skills', skill, 'SKILL.md')), `skills/${skill}/SKILL.md must exist`);
@@ -69,9 +68,8 @@ console.log('Running Loseless Manifest Integrity Test Suite...');
 
   // Verify UI commands (*.toml)
   const requiredCommands = [
-    'loseless.toml', 'loseless-debt.toml', 'loseless-clean.toml', 'loseless-trace.toml',
-    'loseless-impact.toml', 'loseless-review.toml', 'loseless-gate.toml', 'loseless-help.toml',
-    'loseless-blast.toml', 'loseless-critique.toml', 'loseless-arise.toml'
+    'loseless.toml', 'loseless-gate.toml', 'loseless-blast.toml', 'loseless-debt.toml',
+    'loseless-clean.toml', 'loseless-critique.toml', 'loseless-browse.toml', 'loseless-help.toml'
   ];
   requiredCommands.forEach(cmd => {
     assert.ok(fs.existsSync(path.join(process.cwd(), 'commands', cmd)), `commands/${cmd} must exist`);

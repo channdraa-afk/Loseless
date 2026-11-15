@@ -1,0 +1,2 @@
+description = "Token-efficient browser automation and Web Arise Protocol safety gate"
+prompt = "Execute token-efficient browser interaction or frontend verification for target: {{args}}. Leverage 'agent-browser' compact accessibility tree (@e1, @e2) rather than dumping raw DOM. Enforce Phase 1 read-only inspection for navigation/snapshots; require explicit 'Arise' keyword before submitting forms, executing destructive clicks, or running mutations."

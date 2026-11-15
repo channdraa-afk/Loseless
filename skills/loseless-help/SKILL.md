@@ -13,14 +13,14 @@ Loseless provides a unified cognitive protocol and execution gatekeeper for codi
 
 | Command | Purpose |
 | :--- | :--- |
-| `/loseless-clean` | Audits the codebase for bloat, dead code, and removable dependencies (*Parsimony Hunter*). |
-| `/loseless-trace` | Traces the root cause of security bugs and raw Burp Suite / API requests (*Root-Cause Investigator*). |
-| `/loseless-impact` | Computes blast-radius impact and caller distribution before modifying code (*AST Telemetry*). |
-| `/loseless-review` | Performs a ruthless Devil's Advocate architectural review (*Anti-Yes-Man*). |
-| `/loseless-debt` | Scans and compiles the technical debt ledger (`// loseless:` tags). |
+| `/loseless` | Regulates cognitive mindset between deterministic triage (`focus`) and creative divergence (`idea`). |
 | `/loseless-gate` | Displays and configures Arise Protocol gatekeeper state and authorization token. |
+| `/loseless-blast` | Computes blast-radius impact and caller distribution before modifying code (*AST Telemetry*). |
+| `/loseless-debt` | Scans and compiles the technical debt ledger (`// loseless:` tags). |
+| `/loseless-clean` | Audits the codebase for bloat, dead code, and removable dependencies (*Parsimony Hunter*). |
+| `/loseless-critique` | Performs a ruthless Devil's Advocate architectural review (*Anti-Yes-Man*). |
+| `/loseless-browse` | Executes token-efficient headless browser inspection with Web Arise mutation barrier. |
 | `/loseless-help` | Shows this quick-reference guide. |
-| `/loseless [cold\|warm\|status]` | Regulates cognitive entropy between deterministic triage and creative ideation. |
 
 ## Execution Protocol
 
