@@ -111,16 +111,25 @@ try {
   console.log('  ✓ Reconciliation loop relocks session to Phase 1');
 }
 
-// Test 11: Natural language deadline & turbo mode cues trigger instant bypass
+// Test 11: Conversational urgency cues blocked in strict mode & trigger instant bypass in adaptive mode
 {
-  const res1 = analyzePrompt('aku lagi ada deadline tolong beresin');
-  assert.strictEqual(res1.action, 'bypass', 'Deadline urgency must trigger instant bypass');
+  relockSession();
+  const strictBlock1 = analyzePrompt('Bagaimana rencana arsitektur untuk quick fix modul auth ini?');
+  assert.strictEqual(strictBlock1.action, 'none', 'Strict mode must NOT bypass on casual quick fix wording');
+  assert.strictEqual(strictBlock1.phase, 1, 'Strict mode must remain locked at Phase 1');
+
+  const strictBlock2 = analyzePrompt('aku lagi ada deadline tolong beresin');
+  assert.strictEqual(strictBlock2.action, 'none', 'Strict mode must NOT bypass on deadline urgency without explicit flag');
+
+  const adaptiveConfig = { ariseMode: 'adaptive', gateKeyword: 'Arise' };
+  const res1 = analyzePrompt('aku lagi ada deadline tolong beresin', adaptiveConfig);
+  assert.strictEqual(res1.action, 'bypass', 'Deadline urgency must trigger instant bypass in adaptive mode');
   assert.strictEqual(res1.phase, 2, 'Session must enter Phase 2');
 
-  const res2 = analyzePrompt('langsung mode turbo aja');
-  assert.strictEqual(res2.action, 'bypass', 'Turbo mode phrasing must trigger instant bypass');
+  const res2 = analyzePrompt('langsung mode turbo aja', adaptiveConfig);
+  assert.strictEqual(res2.action, 'bypass', 'Turbo mode phrasing must trigger instant bypass in adaptive mode');
   assert.strictEqual(res2.phase, 2, 'Session must enter Phase 2');
-  console.log('  ✓ Natural language deadline & turbo cues trigger instant bypass');
+  console.log('  ✓ Strict mode blocks conversational bypass while adaptive deadline & turbo cues trigger bypass');
 }
 
 // Test 12: Auto-relock policy strictly locks subsequent turns and clears bypass
@@ -240,5 +249,107 @@ try {
   assert.strictEqual(matcherRegex.test('run_command'), true, 'run_command must be intercepted by PreToolUse hook');
   console.log('  ✓ hooks.json PreToolUse matcher targets mutation tools and exempts read-only tools');
 }
+
+// Test 18 (V1-02): Agent rules and oversized doc diffs are never fast-tracked in Phase 1
+{
+  relockSession();
+  const blockedTargets = ['rules/AGENTS.md', 'AGENTS.md', 'CLAUDE.md', 'skills/loseless/SKILL.md', 'hooks.json', '.cursorrules'];
+  for (const target of blockedTargets) {
+    const res = checkToolAuthorization('write_file', target);
+    assert.strictEqual(res.allowed, false, `${target} must never be fast-tracked in Phase 1`);
+  }
+  const bigDocRes = checkToolAuthorization('write_file', 'docs/README.md', null, { diffLines: 25 });
+  assert.strictEqual(bigDocRes.allowed, false, 'Oversized markdown edits (>5 lines) must be blocked in Phase 1');
+  const smallDocRes = checkToolAuthorization('write_file', 'docs/README.md', null, { diffLines: 2 });
+  assert.strictEqual(smallDocRes.allowed, true, 'Small non-critical markdown micro-diff (<=5 lines) must pass');
+  console.log('  ✓ Agent rule protection & micro-diff line-limit enforcement verified');
+}
+
+// Test 19 (V1-01): Delete tools and mutating shell/browser commands blocked in Phase 1 while read-only cmds allowed
+{
+  relockSession();
+  assert.strictEqual(checkToolAuthorization('delete_file', 'src/index.js').allowed, false, 'delete_file must be blocked in Phase 1');
+
+  const mutatingCmds = [
+    'rm -rf src/',
+    'echo "hacked" > server.js',
+    'sed -i "s/a/b/g" app.js',
+    'git commit -m "sneaky"',
+    'agent-browser click @e4',
+    'agent-browser fill @e2 "test"'
+  ];
+  for (const cmd of mutatingCmds) {
+    const check = checkToolAuthorization('run_command', '', null, { commandLine: cmd });
+    assert.strictEqual(check.allowed, false, `Mutating command must be blocked in Phase 1: ${cmd}`);
+  }
+
+  const readOnlyCmds = [
+    'git status',
+    'npm test 2>/dev/null',
+    'rg "->" scripts/',
+    'agent-browser open http://localhost:5173',
+    'agent-browser snapshot -i'
+  ];
+  for (const cmd of readOnlyCmds) {
+    const check = checkToolAuthorization('run_command', '', null, { commandLine: cmd });
+    assert.strictEqual(check.allowed, true, `Read-only command must stay allowed in Phase 1: ${cmd}`);
+  }
+  console.log('  ✓ Mutating shell/browser/delete commands blocked while read-only inspection stays allowed');
+}
+
+// Test 20 (V1-03): Word-boundary matching prevents substring collisions & escapes regex metacharacters
+{
+  relockSession();
+  const gossipRes = analyzePrompt('implementasikan gossip protocol untuk distributed cluster');
+  assert.notStrictEqual(gossipRes.action, 'reconciled', 'Word "gossip" must not match "sip"');
+
+  const undoneRes = analyzePrompt('verify why cache state is undone');
+  assert.notStrictEqual(undoneRes.action, 'reconciled', 'Word "undone" must not match "done"');
+
+  const capsRes = analyzePrompt('I KNOW how it handles timeouts', { ariseMode: 'adaptive', gateKeyword: 'Arise' });
+  assert.notStrictEqual(capsRes.action, 'frustration_detected', 'Substring "NOW" inside "KNOW" must not trigger impatience alert');
+
+  const metaRes = analyzePrompt('check status', { ariseMode: 'strict', gateKeyword: 'Arise(?' });
+  assert.strictEqual(metaRes.action, 'none', 'Regex metacharacters in gateKeyword must never throw SyntaxError');
+  console.log('  ✓ Word-boundary anti-collision & regex-safe gateKeyword verified');
+}
+
+// Test 21: End-to-end PreToolUse subprocess blocks mutating shell/file calls via Antigravity stdin payload
+{
+  const tempRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'loseless-pretool-e2e-'));
+  try {
+    const childEnv = { ...process.env };
+    delete childEnv.LOSELESS_SESSION_DIR;
+    delete childEnv.LOSELESS_WORKSPACE_DIR;
+
+    const proc = spawnSync(process.execPath, [path.join(process.cwd(), 'hooks', 'loseless-pretool.js')], {
+      cwd: process.cwd(),
+      env: childEnv,
+      input: JSON.stringify({
+        cwd: tempRepo,
+        toolCall: { name: 'run_command', args: { CommandLine: 'rm -rf src/' } }
+      }),
+      encoding: 'utf-8'
+    });
+    assert.strictEqual(proc.status, 1, 'Mutating PreToolUse subprocess must exit with code 1');
+    const out = JSON.parse(proc.stdout);
+    assert.strictEqual(out.decision, 'deny', 'PreToolUse stdout JSON must report decision: deny');
+    console.log('  ✓ End-to-end PreToolUse stdin/stdout subprocess enforcement verified');
+  } finally {
+    fs.rmSync(tempRepo, { recursive: true, force: true });
+  }
+}
+
+// Final isolated test sandbox cleanup
+try {
+  if (fs.existsSync(sessionFile)) fs.unlinkSync(sessionFile);
+  if (fs.existsSync(testSessionDir)) {
+    const leftoverFiles = fs.readdirSync(testSessionDir);
+    for (const f of leftoverFiles) {
+      try { fs.unlinkSync(path.join(testSessionDir, f)); } catch (e) {}
+    }
+    fs.rmdirSync(testSessionDir);
+  }
+} catch (e) {}
 
 console.log('All Physical Hooks Tests Passed Successfully.\n');

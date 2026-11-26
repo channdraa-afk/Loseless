@@ -91,6 +91,29 @@ function loadConfig(workspaceDir = null) {
 }
 
 /**
+ * Non-busy synchronous sleep using Atomics.wait to prevent CPU spinlock during Windows lock contention.
+ */
+function sleepSync(ms) {
+  try {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  } catch (e) {
+    const start = Date.now();
+    while (Date.now() - start < ms) {}
+  }
+}
+
+function escapeRegExp(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function hasWordPhrase(text, phrase, caseSensitive = false) {
+  if (!phrase) return false;
+  const escaped = escapeRegExp(phrase);
+  const regex = new RegExp(`(?:^|[^a-zA-Z0-9_])${escaped}(?:$|[^a-zA-Z0-9_])`, caseSensitive ? "" : "i");
+  return regex.test(text);
+}
+
+/**
  * Atomic file writer with Windows retry backoff to prevent EBUSY/EPERM lock collisions.
  */
 function atomicWriteFileSync(targetPath, content) {
@@ -121,15 +144,9 @@ function atomicWriteFileSync(targetPath, content) {
       } catch (e) {}
 
       if (attempts >= maxAttempts) {
-        try {
-          fs.writeFileSync(targetPath, content, "utf-8");
-          return true;
-        } catch (e) {
-          return false;
-        }
+        return false;
       }
-      const start = Date.now();
-      while (Date.now() - start < attempts * 5) {}
+      sleepSync(attempts * 5);
     }
   }
   return false;
@@ -146,8 +163,7 @@ function loadSession(workspaceDir = null) {
         break;
       } catch (e) {
         attempts++;
-        const start = Date.now();
-        while (Date.now() - start < attempts * 5) {}
+        sleepSync(attempts * 5);
       }
     }
 
@@ -236,7 +252,7 @@ function analyzePrompt(promptText, configOverride = null, workspaceDir = null) {
   // 1. Exact match for gate keyword (Case-Sensitive exact match per Rule 2.1)
   const gateKeyword = config.gateKeyword || "Arise";
   const isExactKeyword = trimmed === gateKeyword;
-  const isSealKeyword = new RegExp("(?:^|[\\s,;])" + gateKeyword + "$").test(
+  const isSealKeyword = new RegExp("(?:^|[\\s,;])" + escapeRegExp(gateKeyword) + "$").test(
     trimmed,
   );
   if (isExactKeyword || isSealKeyword) {
@@ -252,10 +268,10 @@ function analyzePrompt(promptText, configOverride = null, workspaceDir = null) {
     };
   }
 
-  // 2. Check explicit bypass
+  // 2. Check explicit CLI / protocol bypass commands (word-boundary safe)
   const explicitBypassList = patterns.explicit_bypass || [];
   for (const bypassWord of explicitBypassList) {
-    if (lower.includes(bypassWord)) {
+    if (hasWordPhrase(lower, bypassWord)) {
       session.bypassed = true;
       session.phase = 2;
       saveSession(session, workspaceDir);
@@ -267,34 +283,58 @@ function analyzePrompt(promptText, configOverride = null, workspaceDir = null) {
     }
   }
 
-  // 3. Frustration / Friction detection (if ariseMode is adaptive)
-  if (config.ariseMode === "adaptive" && !session.bypassed) {
-    const frustrationList = [
-      ...(patterns.frustration_id || []),
-      ...(patterns.frustration_en || []),
-      ...(patterns.impatience_caps || []),
-    ];
-
-    for (const pattern of frustrationList) {
-      if (
-        lower.includes(pattern.toLowerCase()) ||
-        (promptText.includes(pattern) && pattern === pattern.toUpperCase())
-      ) {
-        session.bypassOffered = true;
+  // 3. Adaptive Mode Only: Conversational urgency bypass & Frustration Radar
+  if (config.ariseMode === "adaptive") {
+    const urgencyBypassList = patterns.adaptive_urgency_bypass || [];
+    for (const urgencyWord of urgencyBypassList) {
+      if (hasWordPhrase(lower, urgencyWord)) {
+        session.bypassed = true;
+        session.phase = 2;
         saveSession(session, workspaceDir);
         return {
-          action: "frustration_detected",
-          pattern,
-          message: `[Loseless Radar] Detected friction/urgency ('${pattern}'). Suggesting temporary bypass.`,
+          action: "bypass",
+          phase: 2,
+          message: `[Loseless] Adaptive Turbo Bypass granted for urgency cue.`,
         };
+      }
+    }
+
+    if (!session.bypassed) {
+      const textFrustration = [
+        ...(patterns.frustration_id || []),
+        ...(patterns.frustration_en || []),
+      ];
+      for (const pattern of textFrustration) {
+        if (hasWordPhrase(lower, pattern)) {
+          session.bypassOffered = true;
+          saveSession(session, workspaceDir);
+          return {
+            action: "frustration_detected",
+            pattern,
+            message: `[Loseless Radar] Detected friction/urgency ('${pattern}'). Suggesting temporary bypass.`,
+          };
+        }
+      }
+
+      const capsFrustration = patterns.impatience_caps || [];
+      for (const pattern of capsFrustration) {
+        if (hasWordPhrase(promptText, pattern, true)) {
+          session.bypassOffered = true;
+          saveSession(session, workspaceDir);
+          return {
+            action: "frustration_detected",
+            pattern,
+            message: `[Loseless Radar] Detected friction/urgency ('${pattern}'). Suggesting temporary bypass.`,
+          };
+        }
       }
     }
   }
 
-  // 4. Reconciliation detection
+  // 4. Reconciliation detection (word-boundary safe: prevents 'gossip' -> 'sip' false relocks)
   const reconcileList = patterns.satisfaction_reconcile || [];
   for (const recWord of reconcileList) {
-    if (lower.includes(recWord)) {
+    if (hasWordPhrase(lower, recWord)) {
       session.phase = 1;
       session.bypassed = false;
       session.bypassOffered = false;
