@@ -60,7 +60,7 @@ function hasWorkspaceConfig(workspaceDir = null) {
 
 function buildOnboardingDirective(config, workspaceDir) {
   const keyword = config.gateKeyword || "Arise";
-  return `\n[LOSELESS DIRECTIVE: PROACTIVE_ONBOARDING_REQUIRED]\nNo loseless.config.json detected in workspace (${workspaceDir}).\nMANDATORY FIRST ACTION: Before running file edits or tasks, ask the user to confirm: (1) Gate mode ('adaptive' / 'strict' / 'off'), and (2) Verification token (default: '${keyword}'). Offer to save loseless.config.json once confirmed.`;
+  return `\n[LOSELESS DIRECTIVE: PROACTIVE_ONBOARDING_REQUIRED]\nNo loseless.config.json detected in workspace (${workspaceDir}).\nMANDATORY FIRST ACTION: Before running file edits or tasks, ask the user to confirm: (1) Gate mode ('adaptive' / 'strict' / 'off'), and (2) Verification token (default: '${keyword}'). Once confirmed, request '${keyword}' to authorize writing loseless.config.json (locked in Phase 1).`;
 }
 
 function getSessionFilePath(workspaceDir = null) {

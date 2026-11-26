@@ -269,9 +269,14 @@ try {
 {
   relockSession();
   assert.strictEqual(checkToolAuthorization('delete_file', 'src/index.js').allowed, false, 'delete_file must be blocked in Phase 1');
+  assert.strictEqual(checkToolAuthorization('multi_replace_file_content', 'src/index.js').allowed, false, 'multi_replace_file_content must be blocked in Phase 1');
+  assert.strictEqual(checkToolAuthorization('str_replace_editor', 'src/index.js').allowed, false, 'str_replace_editor must be blocked in Phase 1');
 
   const mutatingCmds = [
     'rm -rf src/',
+    'git status\nrm -rf src/',
+    'echo $(rm -rf src/)',
+    'node -e "require(\'fs\').appendFileSync(\'a.js\', \'x\')"',
     'echo "hacked" > server.js',
     'sed -i "s/a/b/g" app.js',
     'git commit -m "sneaky"',

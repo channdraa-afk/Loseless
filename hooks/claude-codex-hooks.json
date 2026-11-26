@@ -27,6 +27,7 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|write_file|edit_file|replace_file_content|multi_replace_file_content|patch_file|str_replace_editor|delete_file|remove_file|run_command",
         "hooks": [
           {
             "type": "command",

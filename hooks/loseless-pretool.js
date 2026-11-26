@@ -13,11 +13,14 @@ const { loadConfig, loadSession, readStdinPayload, resolveWorkspaceDir } = requi
 const BLOCKED_TOOLS = new Set([
   'write_file',
   'replace_file_content',
+  'multi_replace_file_content',
   'edit_file',
   'write_to_file',
   'apply_diff',
   'insert_content',
   'patch',
+  'patch_file',
+  'str_replace_editor',
   'delete_file',
   'remove_file',
   'create_file',
@@ -81,8 +84,8 @@ function isMutatingShellCommand(commandLine) {
     return true;
   }
 
-  // File/directory/system mutation verbs at command boundaries
-  if (/(?:^|[;&|]\s*)(?:rm|rmdir|del|erase|rd|mv|move|cp|copy|mkdir|md|touch|chmod|chown|unlink|truncate|dd|tee|Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Move-Item|Copy-Item)\b/i.test(cleaned)) {
+  // File/directory/system mutation verbs at command, newline, or subshell boundaries
+  if (/(?:^|[;&|(\r\n`]\s*)(?:rm|rmdir|del|erase|rd|mv|move|cp|copy|mkdir|md|touch|chmod|chown|unlink|truncate|dd|tee|Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Move-Item|Copy-Item)\b/i.test(cleaned)) {
     return true;
   }
 
@@ -95,7 +98,7 @@ function isMutatingShellCommand(commandLine) {
   }
 
   // Inline interpreter filesystem writes (node -e / python -c)
-  if (/\b(?:node|python|python3)\s+-[ec]\b.*(?:writeFile|unlink|rename|rmdir|rmSync|\bopen\s*\([^)]*['"][wa+])/i.test(cleaned)) {
+  if (/\b(?:node|python|python3)\s+-[ec]\b.*(?:writeFile|appendFile|copyFile|mkdir|unlink|rename|rmdir|rmSync|truncate|\bopen\s*\([^)]*['"][wa+])/i.test(cleaned)) {
     return true;
   }
 
@@ -167,7 +170,7 @@ function readToolContext() {
     // Antigravity standard toolCall structure vs generic
     toolName = json.toolCall?.name || json.tool || json.tool_name || json.name || '';
     const args = json.toolCall?.args || json.tool_input || json.parameters || {};
-    targetFile = args.Path || args.path || args.file_path || args.target || json.path || '';
+    targetFile = args.Path || args.path || args.TargetFile || args.AbsolutePath || args.filePath || args.file_path || args.target || json.path || '';
     commandLine = args.CommandLine || args.command || args.cmd || '';
     const contentPayload = args.Replacement || args.ReplacementContent || args.Content || args.CodeContent || args.content || args.new_str || '';
     if (typeof contentPayload === 'string' && contentPayload.length > 0) {

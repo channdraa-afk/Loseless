@@ -49,7 +49,7 @@ if ($LocalScriptDir -and (Test-Path (Join-Path $LocalScriptDir "bin\loseless.js"
         $ExtractPath = Join-Path $env:TEMP "loseless-extract"
         Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
         Expand-Archive -Path $ZipFile -DestinationPath $ExtractPath -Force
-        Copy-Item -Path "$ExtractPath\Loseless-main\*" -Destination $CoreDir -Recurse -Force
+        Get-ChildItem -Path "$ExtractPath\Loseless-main" -Force | Copy-Item -Destination $CoreDir -Recurse -Force
         Remove-Item -Path $ZipFile -Force -ErrorAction SilentlyContinue
         Remove-Item -Path $ExtractPath -Recurse -Force -ErrorAction SilentlyContinue
     }
@@ -76,7 +76,7 @@ Write-Host "   [OK] Created launcher shim : loseless.ps1" -ForegroundColor Green
 # 3. Idempotent User PATH Configuration
 $UserPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
 if ($UserPath -notlike "*$InstallDir*") {
-    $NewPath = "$UserPath;$InstallDir"
+    $NewPath = if ($UserPath) { "$($UserPath.TrimEnd(';'));$InstallDir" } else { $InstallDir }
     [Environment]::SetEnvironmentVariable("Path", $NewPath, [EnvironmentVariableTarget]::User)
     $env:Path = "$env:Path;$InstallDir"
     Write-Host "   [OK] Added to User PATH    : $InstallDir" -ForegroundColor Green
