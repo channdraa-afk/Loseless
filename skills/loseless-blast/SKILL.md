@@ -9,7 +9,7 @@ license: MIT
 
 # Loseless Blast-Radius Offloader
 
-`loseless-blast` is an AST reference aggregator designed to prevent context window bloat during refactoring sessions in large repos and monorepos.
+`loseless-blast` is a fast lexical symbol-reference aggregator designed to prevent context window bloat during refactoring sessions in large repos and monorepos.
 
 ## CLI Usage
 Run directly from terminal or trigger via agent:

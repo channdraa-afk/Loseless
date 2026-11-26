@@ -1,7 +1,8 @@
 """
-Loseless Evaluation Benchmark Tasks
-Curated engineering benchmark tasks evaluating LLM coding agents across
-token efficiency, parsimony diff density, and execution safety compliance.
+Loseless Calibrated Evaluation Benchmark Tasks
+Curated simulation reference scenarios modeling LLM coding agent tradeoffs across
+token conservation, diff parsimony, and execution gate safety compliance.
+(Use `eval_runner.py --live` for real-time Google Gemini API prompt tokenization.)
 """
 
 BENCHMARK_TASKS = [
@@ -49,9 +50,9 @@ BENCHMARK_TASKS = [
     },
     {
         "id": "TASK-04",
-        "name": "Multi-Language AST Blast-Radius",
-        "category": "AST Offloading",
-        "description": "Offload 24 caller-site searches across Python, Go, and TypeScript to local CLI.",
+        "name": "Multi-Language Symbol Blast-Radius",
+        "category": "CLI Reference Offloading",
+        "description": "Offload 24 caller-site lexical searches across Python, Go, and TypeScript to local CLI.",
         "baseline_prompt_tokens": 3400,
         "baseline_completion_tokens": 1800,
         "loseless_prompt_tokens": 829,

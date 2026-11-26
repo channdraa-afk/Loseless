@@ -47,8 +47,8 @@ console.log(`  Min / Max Latency : ${minLatency} ms / ${maxLatency} ms`);
 console.log(`  Execution Speed   : ${opsPerSec} scans/second`);
 console.log(`  Debt Items Found  : ${totalItems} items\n`);
 
-// 2. Blast-Radius Scanner Latency & Throughput Benchmark
-console.log('2. BLAST-RADIUS AST SCANNER BENCHMARK');
+// 2. Blast-Radius Lexical Scanner Latency & Throughput Benchmark
+console.log('2. BLAST-RADIUS SYMBOL SCANNER BENCHMARK');
 console.log('-------------------------------------------------------------');
 
 const blastTimes = [];
@@ -69,7 +69,7 @@ const blastOpsPerSec = (1000 / avgBlastLatency).toFixed(0);
 
 console.log(`  Iterations        : 50 runs`);
 console.log(`  Average Latency   : ${avgBlastLatency} ms`);
-console.log(`  Execution Speed   : ${blastOpsPerSec} AST aggregations/second`);
+console.log(`  Execution Speed   : ${blastOpsPerSec} lexical scans/second`);
 console.log(`  Target Tested     : 'calculateBlastRadius' (${sampleBlastResult.totalRefs} call-sites across ${sampleBlastResult.distinctModules} modules)\n`);
 
 // 3. Token Footprint & Density Evaluation
@@ -87,6 +87,7 @@ const estTokens = Math.ceil(charCount / 4);
 const baselineTokens = 3500;
 const tokensSaved = baselineTokens - estTokens;
 const savingsPercent = ((tokensSaved / baselineTokens) * 100).toFixed(1);
+const ratioPercent = ((estTokens / baselineTokens) * 100).toFixed(1);
 
 console.log(`  Rule File         : rules/AGENTS.md`);
 console.log(`  Total Lines       : ${lineCount} lines`);
@@ -100,7 +101,7 @@ console.log(`  Context Savings   : ${savingsPercent}% overhead reduction (~${tok
 console.log('=============================================================');
 console.log('BENCHMARK VERDICT:');
 console.log(`✓ Scanner throughput is sub-millisecond per item.`);
-console.log(`✓ Blast-Radius AST engine processes whole-repo calls in < 6ms.`);
-console.log(`✓ Token footprint occupies less than 20% of standard rule sets.`);
-console.log(`✓ Zero crash-risk runtime with resilient graceful fallback.`);
+console.log(`✓ Symbol Blast-Radius engine processes whole-repo calls in ${avgBlastLatency}ms.`);
+console.log(`✓ Token footprint occupies only ${ratioPercent}% of standard baseline rules.`);
+console.log(`✓ Zero external npm dependencies (100% Node.js standard library).`);
 console.log('=============================================================\n');

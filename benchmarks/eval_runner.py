@@ -28,7 +28,7 @@ def load_env():
             pass
 
 def count_gemini_tokens(text, api_key):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:countTokens?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:countTokens?key={api_key}"
     data = json.dumps({"contents": [{"parts": [{"text": text}]}]}).encode("utf-8")
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=10) as resp:
@@ -80,7 +80,7 @@ def run():
                 lite_tokens = count_gemini_tokens(lite_content, api_key)
                 reduction = (1 - (lite_tokens / core_tokens)) * 100 if core_tokens else 0
 
-                print(f"• Model Endpoint                      : Google Gemini 3.8 Flash (countTokens)")
+                print(f"• Model Endpoint                      : Google Gemini 2.5 Flash (countTokens)")
                 print(f"• Full Core Prompt (rules/AGENTS.md)  : {core_tokens:,} tokens")
                 print(f"• Single-File Zero (AGENTS_LITE.md)   : {lite_tokens:,} tokens")
                 print(f"• Direct Live Prompt Reduction        : {reduction:.1f}% verified savings")
@@ -88,7 +88,7 @@ def run():
                 print(f"• Live API Tokenization Error         : {e}")
 
     print("")
-    print("AGGREGATE EMPIRICAL SCORECARD:")
+    print("CALIBRATED SCENARIO BENCHMARK SCORECARD (Simulated Harness):")
     print(f"• Total Token Consumption Reduction   : {summary['total_token_savings_pct']}% savings")
     print(f"• LLM Completion Token Reduction      : {summary['completion_token_savings_pct']}% savings")
     print(f"• Code Diff Bloat Reduction           : {summary['diff_line_reduction_pct']}% less code")

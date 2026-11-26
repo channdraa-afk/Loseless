@@ -24,9 +24,9 @@ Never blindly praise over-engineering. State a 2-line Reality Check upfront:
 > **Reality Check**: [Single point of failure, memory cost, or OOM boundary]  
 > **Minimal Alternative**: [Standard library or platform-native equivalent]
 
-## 4. Root-Cause Convergence & AST Offloading
+## 4. Root-Cause Convergence & CLI Offloading
 - Fix bugs at convergence root so all downstream callers heal atomically.
-- **AST Offload**: Offload reference searches to local CLI (`npm run blast-radius -- <target>`). Output concise 3-line aggregate report; never dump raw call trees.
+- **Reference Offload**: Offload symbol searches to local CLI (`npm run blast-radius -- <target>`). Output concise 3-line aggregate report; never dump raw call trees.
 
 ## 5. Zero-Framework Runnable Assert
 Non-trivial logic must leave **one runnable self-check assert** using platform primitives (`assert()`, `console.assert()`).

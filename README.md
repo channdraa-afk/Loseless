@@ -38,9 +38,9 @@ Loseless ships in three distinct tiers tailored to your workflow and environment
 
 | Flavor | Target Platform | Core File | Dependencies | Setup |
 | :--- | :--- | :--- | :--- | :--- |
-| **Loseless Zero** | Cursor, Windsurf, Claude Web, ChatGPT, Ollama | [`AGENTS_LITE.md`](AGENTS_LITE.md) | None (Pure Prompt) | Copy & paste 1 file (< 180 words, ~240 tokens). Zero dependencies. |
-| **Loseless Plugin** | Google Antigravity & Gemini CLI | `hooks.json` + `rules/AGENTS.md` | Antigravity Runtime | Full physical pre-tool hooks, session auto-relock, and 11 UI slash commands. |
-| **Loseless CLI** | Terminal, VS Code, Neovim, CI/CD pipelines | `bin/` & `scripts/` | Node.js >= 18 | Run AST blast-radius, code clean, and debt scanners locally at 0 LLM token cost. |
+| **Loseless Zero** | Cursor, Windsurf, Claude Web, ChatGPT, Ollama | [`AGENTS_LITE.md`](AGENTS_LITE.md) | None (Pure Prompt) | Copy & paste 1 file (< 180 words, ~331 tokens). Zero dependencies. |
+| **Loseless Plugin** | Google Antigravity & Gemini CLI | `hooks.json` + `rules/AGENTS.md` | Antigravity Runtime | Physical pre-tool hooks, zero-turn onboarding, auto-relock, and 8 UI slash commands. |
+| **Loseless CLI** | Terminal, VS Code, Neovim, CI/CD pipelines | `bin/` & `scripts/` | Node.js >= 18 (0 npm pkgs) | Run symbol blast-radius, code clean, and debt scanners locally at 0 LLM token cost. |
 
 ---
 
@@ -65,9 +65,9 @@ loseless help
 ```
 
 ### System Requirements & Prerequisites
-- **Pre-compiled Binaries ([GitHub Releases](https://github.com/channdraa-afk/Loseless/releases))**: Zero dependencies. No Node.js or Go required.
-- **Node.js Plugin & Hook Suite**: Node.js $\ge$ 18.x (LTS recommended).
-- **Go Native Core (Building from Source)**: Go $\ge$ 1.22.
+- **Pre-compiled Go Native Binaries ([GitHub Releases](https://github.com/channdraa-afk/Loseless/releases))**: Standalone binaries with zero runtime dependencies (no Node.js or Go required).
+- **1-Line Installer Wrappers, Plugin & Hooks**: Node.js $\ge$ 18.x (LTS recommended, **0 external npm dependencies**).
+- **Building Go Native Core from Source**: Go $\ge$ 1.22.
 - **Python Benchmark Harness**: Python $\ge$ 3.10 (Standard Library only, zero pip dependencies).
 
 ---
@@ -119,22 +119,23 @@ Teams want safety without bureaucratic friction on trivial edits or tight deadli
 ```json
 {
   "gateKeyword": "Arise",
-  "ariseMode": "adaptive",
+  "ariseMode": "strict",
   "fastTrackMicroDiffs": true,
   "strictMode": true,
   "autoInjectGatekeeperCard": true
 }
 ```
+> Set `"ariseMode": "adaptive"` to activate Friction-Aware Sentiment Radar & Turbo Urgency Bypass, or `"strict"` (shipped default) to require exact keyword matches or explicit `--bypass-arise` flags.
 
 ---
 
 ### 2. Physical Node.js Hooks Suite
 
-Unlike prompt-only rules, Loseless ships a native Node.js runtime hook suite:
-- `hooks/loseless-activate.js` (`SessionStart`): Dynamically mounts configuration, verifies environment, and initializes state.
-- `hooks/loseless-pretool.js` (`PreToolUse`): Physically intercepts write tools (`write_file`, `replace_file_content`, `edit_file`). Exits with status 1 if executed during locked Phase 1.
-- `hooks/loseless-mode-tracker.js` (`UserPromptSubmit`): Locally evaluates prompts against sentiment clusters and token matches without sending raw dictionary words to the LLM context.
-- Hook manifests included: `hooks/claude-codex-hooks.json` and `hooks/cursor-hooks.json`.
+Unlike prompt-only rules, Loseless ships a zero-dependency Node.js runtime hook suite with per-workspace isolation (`stdin.cwd`):
+- `hooks/loseless-activate.js` (`SessionStart`): Resolves user workspace directory, verifies `loseless.config.json`, triggers Zero-Turn Onboarding when missing, and locks session Phase 1.
+- `hooks/loseless-pretool.js` (`PreToolUse`): Intercepts mutation & shell/browser tools (`write_file`, `edit_file`, `delete_file`, `run_command`, `bash`, etc.) while exempting read-only tools (`read_file`, `grep_search`, `list_dir`). Blocks unauthorized writes, agent rule overwrites, and mutating shell/browser operations during Phase 1.
+- `hooks/loseless-mode-tracker.js` (`PreInvocation` / `UserPromptSubmit`): Evaluates prompts using word-boundary pattern matching and regex-safe gate verification without leaking raw dictionary tokens into LLM context.
+- Hook manifests included: `hooks.json` (Antigravity root), `hooks/claude-codex-hooks.json`, and `hooks/cursor-hooks.json` (template requiring `LOSELESS_DIR` path substitution).
 
 ---
 
@@ -171,9 +172,9 @@ Generic assistants create warning fatigue by attaching verbose theoretical discl
 
 ---
 
-### 6. Monorepo Scale & Multi-Language Blast-Radius CLI Offloader
+### 6. Monorepo Scale & Cross-Language Symbol Blast-Radius Offloader
 
-To prevent LLM context exhaustion on large repositories, Loseless offloads cross-language AST reference searches to a dedicated local CLI tool supporting JavaScript, TypeScript, Python, Go, Rust, Java, C++, PHP, and Shell:
+To prevent LLM context exhaustion on large repositories, Loseless offloads fast lexical symbol reference searches to a zero-dependency local CLI tool supporting JavaScript, TypeScript, Python, Go, Rust, Java, C++, PHP, Ruby, Swift, C#, and Shell (excluding markdown prose from code counts):
 
 ```bash
 npm run blast-radius -- <symbolOrFunction>
@@ -249,44 +250,44 @@ Loseless resolves the collision between code minimization and conversational bre
 
 ---
 
-## Empirical Benchmark & Evaluation Scorecard
+## Benchmark Suite & Live Gemini Tokenization
 
-Run the native Python evaluation suite to test token conservation and safety compliance:
+Run the native Python evaluation suite to compute scenario metrics or measure live prompt token counts directly via Google Gemini API:
 
 ```bash
 python benchmarks/eval_runner.py
-# or verify live token counts in real time via Google Gemini API:
+# verify live token counts in real time via Google Gemini API (gemini-2.5-flash):
 python benchmarks/eval_runner.py --live
 # or via npm scripts:
 npm run benchmark:py
 npm run benchmark:live
 ```
 
-### Live Google Gemini API Tokenization Matrix (`gemini-3.8-flash:countTokens`)
+### Prompt Footprint Comparison (`gemini-2.5-flash:countTokens` / Local Estimator)
 
-Empirical measurements verified directly against Google's official tokenizer endpoint:
-
-| Rule Edition | File Location | Token Count | Relative Reduction |
+| Rule Edition | File Location | Approx. Tokens | Relative Reduction |
 | :--- | :--- | :--- | :--- |
 | **Standard Unregulated Agent Prompt** | *(Industry Baseline)* | ~3,500 – 4,500 tokens | Baseline |
-| **Loseless Full Core** | `rules/AGENTS.md` | **1,177 tokens** | **~71% savings** vs industry baseline |
-| **Loseless Zero (Single-File Lite)** | `AGENTS_LITE.md` | **331 tokens** | **71.9% savings** vs Full Core (**>92%** vs baseline) |
+| **Loseless Full Core** | `rules/AGENTS.md` | **~1,195 tokens** *(est.)* | **~66–73% savings** vs industry baseline |
+| **Loseless Zero (Single-File Lite)** | `AGENTS_LITE.md` | **~331 tokens** | **~72% savings** vs Full Core (**>90%** vs baseline) |
 
-### Aggregate Empirical Scorecard (6 Benchmark Scenarios)
+### Calibrated Reference Scenario Scorecard (Simulated Harness — `benchmarks/tasks.py`)
+
+> **Methodology Note**: The table below aggregates 6 curated baseline-vs-Loseless reference simulation scenarios stored in `benchmarks/tasks.py` to verify token conservation and safety gate heuristics cleanly at 0 API cost. Use `--live` with your `GEMINI_API_KEY` for live prompt tokenization measurements.
 
 | Task ID | Benchmark Name | Category | Baseline Tokens | Loseless Tokens | Token Savings | Diff Reduction | Safety Gate |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **TASK-01** | Memory Leak & Heap Triage | Root-Cause Convergence | 3,430 | 1,249 | **63.6%** | 90.5% | PASSED (0 edits before Arise) |
 | **TASK-02** | SQL Injection & RLS Triage | Deep Security Triage | 3,370 | 1,209 | **64.1%** | 81.5% | PASSED (0 edits before Arise) |
 | **TASK-03** | Parsimony Ladder Refactoring | Code Parsimony | 2,430 | 1,019 | **58.1%** | 92.9% | PASSED (0 edits before Arise) |
-| **TASK-04** | Multi-Language AST Blast-Radius | AST Offloading | 5,200 | 924 | **82.2%** | 100.0% | PASSED (0 edits before Arise) |
+| **TASK-04** | Multi-Language Symbol Blast-Radius | CLI Reference Offloading | 5,200 | 924 | **82.2%** | 100.0% | PASSED (0 edits before Arise) |
 | **TASK-05** | Strict Arise Protocol Enforcement | Execution Gatekeeper | 2,090 | 1,109 | **46.9%** | 100.0% | PASSED (0 edits before Arise) |
 | **TASK-06** | Natural Urgency Turbo Bypass | Adaptive Friction | 2,050 | 1,039 | **49.3%** | 57.1% | PASSED (0 edits before Arise) |
 
-- **Total Token Reduction**: **64.73% savings**
-- **LLM Completion Reduction**: **83.37% savings**
-- **Code Diff Bloat Reduction**: **87.92% less code**
-- **Harness Latency**: **0.07 ms** (near-zero CPU overhead)
+- **Simulated Token Reduction**: **64.73% savings**
+- **Simulated Completion Reduction**: **83.37% savings**
+- **Simulated Diff Bloat Reduction**: **87.92% less code**
+- **Local Harness Latency**: **< 1 ms** (zero external dependencies)
 - **Safety Gate Compliance**: **100% adherence** (0 unauthorized edits in Phase 1)
 
 ---
@@ -298,32 +299,34 @@ loseless/
 ├── cmd/
 │   └── loseless/            # Go Native Core CLI entrypoint (< 1ms execution)
 ├── internal/
-│   └── blast/               # Multi-language Goroutine concurrent AST scanner
+│   └── blast/               # Multi-language Goroutine concurrent lexical symbol scanner
 ├── commands/                # Clean 8-command Antigravity UI slash suite
 ├── skills/                  # Autonomous specialized skill bundles (browse, blast, debt...)
 ├── hooks/
-│   ├── loseless-activate.js # SessionStart lifecycle hook
-│   ├── loseless-mode-tracker.js # UserPromptSubmit sentiment & gatekeeper tracker
-│   ├── loseless-pretool.js  # PreToolUse physical write blocker
+│   ├── loseless-activate.js # SessionStart lifecycle hook & onboarding trigger
+│   ├── loseless-mode-tracker.js # PreInvocation / UserPromptSubmit tracker & guard
+│   ├── loseless-pretool.js  # PreToolUse write/shell/browser mutation blocker
+│   ├── claude-codex-hooks.json # Claude Code & Codex hook manifest
+│   ├── cursor-hooks.json    # Cursor IDE hook template (replace LOSELESS_DIR)
 │   └── sentiment-patterns.json # Local zero-token friction & urgency patterns
 ├── rules/
-│   ├── AGENTS.md            # Full Loseless Core rules (1,177 tokens)
-│   └── LOSELESS_LITE.md     # Loseless Zero rules (< 240 tokens)
-├── benchmarks/              # Empirical evaluation suite & live Gemini tokenizer
-│   ├── eval_runner.py       # Benchmark runner with --live Gemini API support
-│   ├── tasks.py             # 6 standardized software engineering tasks
+│   └── AGENTS.md            # Full Loseless Core rules (< 65 lines)
+├── benchmarks/              # Python evaluation harness & live Gemini tokenizer
+│   ├── eval_runner.py       # Benchmark runner with --live gemini-2.5-flash support
+│   ├── tasks.py             # 6 curated reference evaluation scenarios
 │   └── metrics.py           # Statistical token, completion, and parsimony metrics
 ├── types/                   # TypeScript static type declarations & contracts
 │   └── index.d.ts           # LoselessConfig, AriseMode, and BlastRadiusResult
-├── scripts/                 # Standalone developer tools (debt & blast scanners)
-├── tests/                   # Zero-regression automated unit test suite
+├── scripts/                 # Standalone zero-dep developer tools (debt & blast scanners)
+├── tests/                   # Automated unit & subprocess integration test suites
 ├── install.ps1              # Universal 1-click Windows PowerShell installer
 ├── install.sh               # Universal 1-click POSIX Shell installer
-├── AGENTS_LITE.md           # Single-file prompt standard (331 tokens)
+├── AGENTS.md                # Universal Codex / workspace agent rules (synced SSOT)
+├── AGENTS_LITE.md           # Single-file prompt standard (~331 tokens)
 ├── CLAUDE.md                # Claude Code integration manifest
 ├── .cursorrules             # Cursor IDE always-on rules
 ├── go.mod                   # Go module definition
-└── package.json             # Node.js package manifest & CLI bin
+└── package.json             # Node.js 0-dependency package manifest & CLI bin
 ```
 
 ---
@@ -336,7 +339,7 @@ loseless/
 | :--- | :--- |
 | `/loseless` | Dynamic cognitive mode switcher (`focus`, `idea`, `strict`). |
 | `/loseless-gate` | Physical Arise Protocol execution gatekeeper inspector and manager. |
-| `/loseless-blast` | Multi-language AST blast-radius analyzer preserving 95%+ tokens. |
+| `/loseless-blast` | Multi-language symbol blast-radius analyzer preserving 95%+ tokens. |
 | `/loseless-debt` | Technical debt harvester scanning all `// loseless:` annotations. |
 | `/loseless-clean` | Audits codebase for bloat, dead code, and dependencies (*Parsimony Hunter*). |
 | `/loseless-critique` | Ruthless Devil's Advocate architectural review (*Anti-Yes-Man*). |
@@ -347,15 +350,24 @@ loseless/
 
 | Command | Purpose |
 | :--- | :--- |
-| `loseless status` | Inspects Arise gatekeeper state and configuration via Go native core (< 1ms). |
-| `loseless gate <action>` | Manages physical execution gate state natively (`unlock`, `relock`, `bypass`). |
-| `loseless blast <sym>` | Concurrent Goroutine AST scanner traversing multi-language references in parallel. |
-| `npm test` | Runs the full test suite (Scanner, Manifests, Physical Hooks, Blast-Radius). |
+| `loseless status` | Inspects Arise gatekeeper state and configuration. |
+| `loseless gate <action>` | Manages physical execution gate state (`unlock`, `lock`, `relock`, `bypass`, `status`). |
+| `loseless blast <sym>` | Scans multi-language symbol references cleanly in milliseconds. |
+| `npm test` | Runs the full test suite (Scanner, Manifests, Physical Hooks + Subprocess, Blast-Radius). |
 | `npm run debt` | Executes local high-speed multi-syntax technical debt harvester. |
-| `npm run blast-radius -- <sym>` | Computes blast-radius caller telemetry without LLM token waste. |
+| `npm run blast-radius -- <sym>` | Computes symbol caller telemetry without LLM token waste. |
 | `npm run benchmark` | Executes 100-run performance & token density benchmark suite. |
-| `npm run benchmark:py` | Executes Python-based empirical evaluation harness across 6 engineering scenarios. |
-| `npm run benchmark:live` | Evaluates live token counts in real time directly via Google Gemini API. |
+| `npm run benchmark:py` | Executes Python-based calibrated scenario evaluation harness. |
+| `npm run benchmark:live` | Evaluates live token counts via Google Gemini `gemini-2.5-flash` API. |
+
+---
+
+## Troubleshooting & Platform Notes
+
+- **Windows Hook Error (`exec: "cmd": executable file not found in %PATH%`)**:
+  Antigravity executes plugin `hooks.json` entries via `cmd /c` on Windows. If your Windows System/User `PATH` was modified and lacks `C:\Windows\System32`, hook spawning fails. Add `C:\Windows\System32` back to your Windows `PATH` and restart Antigravity. Read-only tools (`read_file`, `grep_search`, `list_dir`) are explicitly exempted from `PreToolUse` so research turns remain fast and unblocked.
+- **Cursor Hooks (`hooks/cursor-hooks.json`)**:
+  Copy `hooks/cursor-hooks.json` into `~/.cursor/hooks.json` (or `.cursor/hooks.json`) and replace `LOSELESS_DIR` with the absolute forward-slash path to your cloned Loseless directory.
 
 ---
 

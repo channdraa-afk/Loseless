@@ -15,7 +15,7 @@ Loseless provides a unified cognitive protocol and execution gatekeeper for codi
 | :--- | :--- |
 | `/loseless` | Regulates cognitive mindset between deterministic triage (`focus`) and creative divergence (`idea`). |
 | `/loseless-gate` | Displays and configures Arise Protocol gatekeeper state and authorization token. |
-| `/loseless-blast` | Computes blast-radius impact and caller distribution before modifying code (*AST Telemetry*). |
+| `/loseless-blast` | Computes blast-radius impact and caller distribution before modifying code (*Symbol Telemetry*). |
 | `/loseless-debt` | Scans and compiles the technical debt ledger (`// loseless:` tags). |
 | `/loseless-clean` | Audits the codebase for bloat, dead code, and removable dependencies (*Parsimony Hunter*). |
 | `/loseless-critique` | Performs a ruthless Devil's Advocate architectural review (*Anti-Yes-Man*). |

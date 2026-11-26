@@ -59,7 +59,7 @@ console.log('Running Loseless Blast-Radius Scanner Test Suite...');
   assert.ok(result.kindBreakdown.definition >= 1, 'Must detect definition kinds');
   assert.ok(result.kindBreakdown.import >= 2, 'Must detect import kinds');
   assert.ok(result.kindBreakdown['call-site'] >= 3, 'Must detect call-site kinds');
-  console.log('  ✓ Multi-language AST reference aggregation verified (Python, Go, Rust)');
+  console.log('  ✓ Multi-language symbol reference aggregation verified (Python, Go, Rust)');
 }
 
 // Test 6 (V3-01): Markdown docs are excluded from source symbol reference counts

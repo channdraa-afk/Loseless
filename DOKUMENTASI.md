@@ -70,7 +70,7 @@ c:\My Project\Loseless\
 ├── skills\
 │   ├── loseless\SKILL.md     # Command /loseless cognitive mode switcher
 │   ├── loseless-gate\SKILL.md # Arise gatekeeper inspector & manager
-│   ├── loseless-blast\SKILL.md # AST reference aggregator skill
+│   ├── loseless-blast\SKILL.md # Lexical symbol reference aggregator skill
 │   ├── loseless-debt\SKILL.md # Harvester tag "// loseless:"
 │   ├── loseless-clean\SKILL.md # Parsimony Hunter code bloat auditor
 │   ├── loseless-critique\SKILL.md # One-shot Devil's Advocate review
@@ -85,11 +85,11 @@ c:\My Project\Loseless\
 ## 📦 PILAR 2: STACK & PLUGIN ECOSYSTEM
 
 - **Plugin Type**: Antigravity Cross-Agent Bundle (`plugin.json` + `gemini-extension.json` + `hooks/`).
-- **Physical Enforcement**: Native Node.js Hooks (`PreToolUse`, `SessionStart`, `UserPromptSubmit`) dengan dukungan streaming JSON via `stdin` dan CLI arguments.
+- **Physical Enforcement**: Native Node.js Hooks (`PreToolUse`, `SessionStart`, `PreInvocation`/`UserPromptSubmit`) dengan dukungan JSON streaming via `stdin` (terisolasi per workspace `stdin.cwd`).
 - **Context Anchor**: `rules/AGENTS.md` (di-load otomatis oleh agent sebagai prompt sistem ringkas, < 75 baris).
 - **Sentiment Radar**: Zero-Token Local Pattern Bank di `hooks/sentiment-patterns.json`.
 - **Lifecycle Policy**: Turn-Scoped Auto-Relock (mengunci kembali ke Fase 1 saat tugas baru dimulai untuk mencegah *stale unlock leaks*).
-- **Dependency Strategy**: Resilient architecture via `picocolors` dengan zero-crash graceful fallback ke standard library.
+- **Dependency Strategy**: True 0-dependency architecture (100% standard library Node.js, Go, dan Python tanpa `node_modules`).
 
 ---
 
@@ -222,3 +222,11 @@ c:\My Project\Loseless\
     1. *Eliminasi Command Bloat*: Menghapus 4 alias redundant (`loseless-impact.toml`, `loseless-review.toml`, `loseless-arise.toml`, `loseless-trace.toml`) beserta folder skills-nya, merampingkan suite menjadi 8 komando inti yang bersih.
     2. *Web Arise Protocol (`commands/loseless-browse.toml`, `skills/loseless-browse/SKILL.md`)*: Mengadopsi arsitektur browser automation ala `vercel-labs/agent-browser` (ref `@e1`, `@e2` berbasis accessibility tree, hemat token 90%+ dibanding raw DOM/screenshot) dengan physical mutation barrier di Phase 1 (evaluating & clicking state form terproteksi hingga `Arise`).
     3. *System Message Relock Guard (`hooks/loseless-mode-tracker.js`)*: Mengabaikan pesan internal sistem IDE (`[Message]`, `[Notice]`, `<SYSTEM_MESSAGE>`) agar tidak memicu auto-relock prematur ke Phase 1 di tengah giliran aktif. Seluruh 4 test suite lulus 100%.
+- [x] Audit Keamanan 5-Tahap, Isolasi Workspace Plugin, & Zero-Dependency Core (v1.4.0 Hardening):
+  - **Problem**: Resolusi `process.cwd()` di plugin hook membaca folder plugin bukan proyek user (membungkam Zero-Turn Onboarding), matcher `*` menahan `read_file` saat `%PATH%` Windows bermasalah, tool `run_command`/`delete_file` serta rule Markdown lolos Phase 1, mode `strict` bisa ditembus frasa santai/substring collision, CLI `loseless blast`/`debt` mati di `bin/loseless.js`, `debt-scanner.js` tersangkut tanda hubung/`inJsDoc`, dependensi `picocolors` membebani installer, dan endpoint live benchmark menunjuk model non-publik.
+  - **Solution / State**:
+    1. *Step 1 (Antigravity Hook CWD & Matcher)*: Menambahkan `resolveWorkspaceDir()` dari `stdin.cwd`/`workspacePaths` di seluruh hook (`activate`, `mode-tracker`, `pretool`), guard fallback onboarding `PreInvocation`, dan mempersempit `hooks.json` `PreToolUse` matcher ke tool mutasi saja (`read_file` bebas hambatan).
+    2. *Step 2 (Hardening Gatekeeper)*: Menutup celah `AGENTS.md`/`SKILL.md`/micro-diff > 5 baris, memblokir `delete_file` & mutasi `run_command`/`agent-browser` di Phase 1, memisahkan `adaptive_urgency_bypass` dari `strict`, memakai word-boundary regex escape + `Atomics.wait`.
+    3. *Step 3 (CLI & Scanner Recovery)*: Memulihkan `bin/loseless.js` (`blast`, `debt`, `gate` atomik), memperbaiki regex tanda hubung/`@loseless`/penutup `inJsDoc` di `debt-scanner.js`, menyamakan TTL 10 menit, alias `lock`/`status`, buffer 1MB, & boundary RE2 (`$`/`@`) di Go core.
+    4. *Step 4 (0-Dep & Manifest Sync)*: Menghapus `picocolors` (ANSI native stdlib), membersihkan duplikat `rules/LOSELESS_LITE.md` & `.cursor/rules/loseless.mdc`, menyamakan versi `1.4.0` + `loseless-help.toml` + adapter rules, serta memperbaiki copy dotfiles di `install.sh`/`install.ps1`.
+    5. *Step 5 (Benchmark & Docs)*: Memperbarui endpoint ke `gemini-2.5-flash:countTokens`, melabeli simulasi benchmark & Lexical Symbol Scanner secara jujur, serta menambah panduan troubleshooting Windows `%PATH%` dan Cursor template. Seluruh unit + subprocess tests lulus 100%.
