@@ -4,35 +4,34 @@ const assert = require('assert');
 
 console.log('Running Loseless Manifest Integrity Test Suite...');
 
-// Test 1: package.json validation
+// Test 1: package.json validation (zero-dependency core)
 {
   const pkgRaw = fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8');
   const pkg = JSON.parse(pkgRaw);
   assert.strictEqual(pkg.name, 'loseless', 'Package name must be loseless');
   assert.ok(pkg.version, 'Package must declare version');
+  assert.strictEqual(Object.keys(pkg.dependencies || {}).length, 0, 'Core must remain zero-dependency');
   assert.ok(pkg.scripts && pkg.scripts.test, 'Package must declare test script');
   assert.ok(pkg.scripts && pkg.scripts.debt, 'Package must declare debt script');
   assert.ok(pkg.scripts && pkg.scripts['blast-radius'], 'Package must declare blast-radius script');
-  console.log('  ✓ package.json syntax and scripts verified');
-}
+  console.log('  ✓ package.json syntax, zero-dependency core, and scripts verified');
 
-// Test 2: plugin.json validation
-{
+  // Test 2: plugin.json validation
   const pluginRaw = fs.readFileSync(path.join(process.cwd(), 'plugin.json'), 'utf-8');
   const plugin = JSON.parse(pluginRaw);
   assert.strictEqual(plugin.name, 'loseless', 'Plugin name must be loseless');
-  assert.ok(plugin.version, 'Plugin must declare version');
+  assert.strictEqual(plugin.version, pkg.version, 'plugin.json version must stay synced with package.json');
   assert.ok(plugin.description, 'Plugin must declare description');
-  console.log('  ✓ plugin.json schema verified');
-}
+  assert.ok(Array.isArray(plugin.suggestedPrompts) && plugin.suggestedPrompts.length <= 3, 'suggestedPrompts must contain at most 3 items');
+  console.log('  ✓ plugin.json schema and version parity verified');
 
-// Test 3: gemini-extension.json validation
-{
+  // Test 3: gemini-extension.json validation
   const extRaw = fs.readFileSync(path.join(process.cwd(), 'gemini-extension.json'), 'utf-8');
   const ext = JSON.parse(extRaw);
   assert.strictEqual(ext.name, 'loseless', 'Extension name must be loseless');
+  assert.strictEqual(ext.version, pkg.version, 'gemini-extension.json version must stay synced with package.json');
   assert.strictEqual(ext.contextFileName, 'rules/AGENTS.md', 'contextFileName must point to rules/AGENTS.md');
-  console.log('  ✓ gemini-extension.json integration verified');
+  console.log('  ✓ gemini-extension.json integration and version parity verified');
 }
 
 // Test 4: loseless.config.json validation

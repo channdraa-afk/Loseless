@@ -1,2 +1,2 @@
 description = "Display quick-reference card for all Loseless commands, modes, and protocols"
-prompt = "Display the Loseless Quick-Reference Card showing all slash commands (/loseless-clean, /loseless-trace, /loseless-impact, /loseless-review, /loseless-debt, /loseless-gate, /loseless), cognitive modes (cold/warm), and the Arise Protocol authorization token."
+prompt = "Display the Loseless Quick-Reference Card showing all 8 streamlined slash commands (/loseless, /loseless-gate, /loseless-blast, /loseless-debt, /loseless-clean, /loseless-critique, /loseless-browse, /loseless-help), cognitive modes (focus/idea), and the Arise Protocol authorization token."

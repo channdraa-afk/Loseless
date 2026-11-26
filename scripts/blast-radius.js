@@ -9,20 +9,17 @@
 const fs = require('fs');
 const path = require('path');
 
-// Resilient terminal styling (zero-crash fallback)
-let pc;
-try {
-  pc = require('picocolors');
-} catch (e) {
-  pc = {
-    cyan: (s) => s,
-    green: (s) => s,
-    yellow: (s) => s,
-    red: (s) => s,
-    bold: (s) => s,
-    dim: (s) => s
-  };
-}
+// Native zero-dependency ANSI terminal styling
+const useColor = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
+const wrapAnsi = (code) => (s) => (useColor ? `\x1b[${code}m${s}\x1b[0m` : String(s));
+const pc = {
+  cyan: wrapAnsi('36'),
+  green: wrapAnsi('32'),
+  yellow: wrapAnsi('33'),
+  red: wrapAnsi('31'),
+  bold: wrapAnsi('1'),
+  dim: wrapAnsi('2')
+};
 
 const IGNORED_DIRS = new Set([
   'node_modules',

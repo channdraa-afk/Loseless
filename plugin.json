@@ -1,15 +1,15 @@
 {
   "name": "loseless",
+  "displayName": "Loseless",
   "description": "Strict cognitive discipline & execution protocol for coding agents: Arise Protocol, Mandatory Devil's Advocate, Dual Cognitive Modes, Physical Hook Gatekeeper, The Parsimony Ladder, and Zero Context Drift.",
-  "version": "1.3.0",
+  "version": "1.4.0",
+  "logo": "assets/logo.svg",
   "author": "Chandra (channdraa-afk)",
   "repository": "https://github.com/channdraa-afk/Loseless",
   "license": "MIT",
-  "hooks": "hooks/claude-codex-hooks.json",
   "suggestedPrompts": [
-    "Aktifkan mode loseless cold untuk audit bug kritis",
-    "Uji kritis ide arsitektur ini dengan devil's advocate",
-    "Pindai utang teknis codebase dengan /loseless debt",
-    "Analisis dampak refaktor dengan /loseless blast-radius"
+    "Switch to /loseless focus to isolate root cause before proposing fixes",
+    "Critique this architecture design with /loseless-critique",
+    "Scan symbol references and risk tier with /loseless-blast"
   ]
 }

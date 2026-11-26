@@ -30,8 +30,10 @@ if (-not (Test-Path $CoreDir)) {
 Write-Host "-> Synchronizing Loseless Core..." -ForegroundColor Gray
 $LocalScriptDir = $PSScriptRoot
 if ($LocalScriptDir -and (Test-Path (Join-Path $LocalScriptDir "bin\loseless.js"))) {
-    Write-Host "   Installing from local workspace..." -ForegroundColor Gray
-    Copy-Item -Path "$LocalScriptDir\*" -Destination $CoreDir -Recurse -Force
+    Write-Host "   Installing from local workspace (including dotfiles)..." -ForegroundColor Gray
+    Get-ChildItem -Path $LocalScriptDir -Force | Where-Object { $_.Name -notin @('.git', '.loseless', 'node_modules') } | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination $CoreDir -Recurse -Force
+    }
 } else {
     if (Get-Command git -ErrorAction SilentlyContinue) {
         Write-Host "   Cloning from GitHub repository via git..." -ForegroundColor Gray

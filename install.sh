@@ -19,8 +19,9 @@ mkdir -p "$CORE_DIR"
 
 printf "-> Synchronizing Loseless Core...\n"
 if [ -d "./bin" ] && [ -f "./bin/loseless.js" ]; then
-  printf "   Installing from local workspace...\n"
-  cp -R ./* "$CORE_DIR/"
+  printf "   Installing from local workspace (including dotfiles)...\n"
+  cp -R . "$CORE_DIR/"
+  rm -rf "$CORE_DIR/.git" "$CORE_DIR/.loseless" "$CORE_DIR/node_modules"
 else
   if command -v git >/dev/null 2>&1; then
     printf "   Cloning from GitHub repository via git...\n"
