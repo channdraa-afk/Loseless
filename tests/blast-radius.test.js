@@ -1,6 +1,8 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { spawnSync } = require('child_process');
 const { calculateBlastRadius } = require('../scripts/blast-radius');
 
 console.log('Running Loseless Blast-Radius Scanner Test Suite...');
@@ -58,6 +60,39 @@ console.log('Running Loseless Blast-Radius Scanner Test Suite...');
   assert.ok(result.kindBreakdown.import >= 2, 'Must detect import kinds');
   assert.ok(result.kindBreakdown['call-site'] >= 3, 'Must detect call-site kinds');
   console.log('  ✓ Multi-language AST reference aggregation verified (Python, Go, Rust)');
+}
+
+// Test 6 (V3-01): Markdown docs are excluded from source symbol reference counts
+{
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'loseless-blast-md-'));
+  try {
+    fs.writeFileSync(path.join(tempDir, 'docs.md'), 'verifyUniqueSymbol verifyUniqueSymbol\n', 'utf-8');
+    fs.writeFileSync(path.join(tempDir, 'app.js'), 'verifyUniqueSymbol();\n', 'utf-8');
+    const res = calculateBlastRadius('verifyUniqueSymbol', tempDir);
+    assert.strictEqual(res.totalRefs, 1, 'Markdown prose must not inflate code reference counts');
+    console.log('  ✓ Markdown prose exclusion verified in blast-radius scanner');
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
+// Test 7 (V2-01): Universal CLI entrypoint executes blast and debt subcommands end-to-end
+{
+  const cliPath = path.join(process.cwd(), 'bin', 'loseless.js');
+  const blastProc = spawnSync(process.execPath, [cliPath, 'blast', 'calculateBlastRadius'], {
+    cwd: process.cwd(),
+    encoding: 'utf-8'
+  });
+  assert.strictEqual(blastProc.status, 0, 'CLI blast subcommand must exit 0');
+  assert.ok(blastProc.stdout.includes('LOSELESS BLAST-RADIUS IMPACT TELEMETRY'), 'CLI blast must emit full telemetry report');
+
+  const debtProc = spawnSync(process.execPath, [cliPath, 'debt'], {
+    cwd: process.cwd(),
+    encoding: 'utf-8'
+  });
+  assert.strictEqual(debtProc.status, 0, 'CLI debt subcommand must exit 0');
+  assert.ok(debtProc.stdout.includes('LOSELESS TECHNICAL DEBT SCANNER'), 'CLI debt must emit full scanner report');
+  console.log('  ✓ CLI entrypoint execution verified for blast and debt subcommands');
 }
 
 console.log('All Blast-Radius Tests Passed Successfully.\n');

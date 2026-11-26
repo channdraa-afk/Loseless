@@ -27,6 +27,9 @@ try {
 const IGNORED_DIRS = new Set([
   'node_modules',
   '.git',
+  '.loseless',
+  '.temp-test-session',
+  '__pycache__',
   'dist',
   'build',
   '.cache',
@@ -38,7 +41,7 @@ const IGNORED_DIRS = new Set([
 const SUPPORTED_EXTENSIONS = new Set([
   '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
   '.py', '.go', '.rs', '.java', '.kt', '.cs', '.cpp', '.c', '.h', '.php', '.rb', '.swift',
-  '.sql', '.sh', '.bash', '.html', '.css', '.scss', '.yaml', '.yml', '.md'
+  '.sql', '.sh', '.bash', '.html', '.css', '.scss'
 ]);
 
 const EXT_TO_LANG = {
@@ -238,4 +241,4 @@ if (require.main === module) {
   run();
 }
 
-module.exports = { calculateBlastRadius, walk };
+module.exports = { calculateBlastRadius, walk, printReport, run };

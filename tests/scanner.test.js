@@ -97,4 +97,33 @@ function worker() {}
   console.log(`  ✓ End-to-end repository walk verified (${debts.length} items parsed cleanly)`);
 }
 
+// Test 8 (V3-02): Hyphenated ceilings and inJsDoc closing comment trap prevention
+{
+  const hyphenLine = '// loseless: ceiling: in-memory 500 items -> upgrade: redis-cluster';
+  const match = hyphenLine.match(INLINE_DEBT_REGEX);
+  assert.ok(match, 'Hyphenated unbracketed inline debt comment must match');
+  assert.strictEqual(match[1].replace(/^ceiling:\s*/i, '').trim(), 'in-memory 500 items');
+  assert.strictEqual(match[2].replace(/^upgrade:\s*/i, '').trim(), 'redis-cluster');
+
+  const tempTrapPath = path.join(__dirname, 'temp-jsdoc-trap.js');
+  const sample = `
+/** @loseless ceiling: 200 items -> upgrade: stream-v2 */
+/**
+ * Multiline block with trailing comment on closing line
+ * ceiling: 500 req/s
+ * upgrade: worker-pool
+ */ // end block
+// loseless: ceiling: 5-min TTL -> upgrade: persistent-store
+`;
+  fs.writeFileSync(tempTrapPath, sample, 'utf-8');
+  const results = [];
+  scanFile(tempTrapPath, results);
+  try {
+    fs.unlinkSync(tempTrapPath);
+  } catch (e) {}
+
+  assert.strictEqual(results.length, 3, 'Must capture single-line JSDoc, multiline JSDoc with inline closing comment, and subsequent hyphenated inline debt');
+  console.log('  ✓ Hyphenated inline debt & JSDoc closing-trap prevention verified');
+}
+
 console.log('All Scanner Tests Passed Successfully.\n');

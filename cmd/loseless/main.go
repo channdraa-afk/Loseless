@@ -12,13 +12,15 @@ import (
 )
 
 const version = "1.4.0"
+const sessionTTLMs int64 = 10 * 60 * 1000
 
 type SessionState struct {
-	Phase         int    `json:"phase"`
-	Bypassed      bool   `json:"bypassed"`
-	BypassOffered bool   `json:"bypassOffered"`
-	LastKeyword   string `json:"lastKeyword"`
-	UpdatedAt     int64  `json:"updatedAt"`
+	Phase              int    `json:"phase"`
+	Bypassed           bool   `json:"bypassed"`
+	BypassOffered      bool   `json:"bypassOffered"`
+	OnboardingPrompted bool   `json:"onboardingPrompted"`
+	LastKeyword        string `json:"lastKeyword"`
+	UpdatedAt          int64  `json:"updatedAt"`
 }
 
 type ConfigState struct {
@@ -56,6 +58,12 @@ func readSession() SessionState {
 	var s SessionState
 	if err := json.Unmarshal(data, &s); err != nil {
 		return SessionState{Phase: 1, Bypassed: false, UpdatedAt: time.Now().UnixMilli()}
+	}
+	// Enforce 10-minute session TTL matching Node.js hook runtime
+	if s.UpdatedAt > 0 && (time.Now().UnixMilli()-s.UpdatedAt) > sessionTTLMs && !s.Bypassed {
+		s.Phase = 1
+		s.BypassOffered = false
+		_ = saveSession(s)
 	}
 	return s
 }
@@ -103,7 +111,7 @@ func readConfig() ConfigState {
 	if err != nil {
 		return defaultCfg
 	}
-	var cfg ConfigState
+	cfg := defaultCfg
 	if err := json.Unmarshal(data, &cfg); err != nil {
 		return defaultCfg
 	}
@@ -118,8 +126,8 @@ func printHelp() {
 	fmt.Println("")
 	fmt.Println("Commands:")
 	fmt.Println("  status             Display active Arise gatekeeper state and configuration")
-	fmt.Println("  gate <subcommand>  Manage physical execution gate (unlock | relock | bypass)")
-	fmt.Println("  blast <symbol>     Run concurrent AST reference and blast-radius scan")
+	fmt.Println("  gate <subcommand>  Manage physical execution gate (unlock | lock | relock | bypass | status)")
+	fmt.Println("  blast <symbol>     Run concurrent symbol reference and blast-radius scan")
 	fmt.Println("  version            Print CLI version and exit")
 	fmt.Println("  help               Show this help message")
 }
@@ -168,13 +176,18 @@ func main() {
 		fmt.Println("=============================================================")
 
 	case "gate":
-		if len(os.Args) < 3 {
-			fmt.Println("Usage: loseless gate <unlock | relock | bypass>")
-			os.Exit(1)
+		sub := "status"
+		if len(os.Args) >= 3 {
+			sub = strings.ToLower(os.Args[2])
 		}
-		sub := strings.ToLower(os.Args[2])
 		session := readSession()
 		switch sub {
+		case "status":
+			statusLabel := "LOCKED"
+			if session.Phase == 2 {
+				statusLabel = "UNLOCKED"
+			}
+			fmt.Printf("[Loseless] Gate is currently in Phase %d [%s].\n", session.Phase, statusLabel)
 		case "unlock":
 			session.Phase = 2
 			session.Bypassed = false
@@ -184,7 +197,7 @@ func main() {
 				os.Exit(1)
 			}
 			fmt.Println("[Loseless Gate] Execution Gate Unlocked. Phase 2 active.")
-		case "relock":
+		case "lock", "relock":
 			session.Phase = 1
 			session.Bypassed = false
 			session.LastKeyword = ""
@@ -202,7 +215,7 @@ func main() {
 			}
 			fmt.Println("[Loseless Gate] Emergency Bypass Activated. Phase 2 active.")
 		default:
-			fmt.Printf("Unknown gate action: '%s'. Expected 'unlock', 'relock', or 'bypass'.\n", sub)
+			fmt.Printf("Unknown gate action: '%s'. Expected 'unlock', 'lock', 'relock', 'bypass', or 'status'.\n", sub)
 			os.Exit(1)
 		}
 

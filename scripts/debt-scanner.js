@@ -12,6 +12,9 @@ const path = require('path');
 const IGNORED_DIRS = new Set([
   'node_modules',
   '.git',
+  '.loseless',
+  '.temp-test-session',
+  '__pycache__',
   'dist',
   'build',
   '.cache',
@@ -27,10 +30,10 @@ const SUPPORTED_EXTENSIONS = new Set([
 ]);
 
 // Original standard regex with support for both lossless/loseless and arrow variants:
-const DEBT_REGEX = /(?:\/\/|#|--|\/\*)\s*(?:lossless|loseless):\s*\[ceiling:\s*([^\]]+)\]\s*(?:->|=>|-->|➔)\s*upgrade:\s*\[([^\]]+)\]/i;
+const DEBT_REGEX = /(?:\/\/|#|--|\/\*\*?)\s*(?:lossless|loseless):\s*\[ceiling:\s*([^\]]+)\]\s*(?:-->|->|=>|➔)\s*upgrade:\s*\[([^\]]+)\]/i;
 
-// Resilient inline regex supporting missing brackets, whitespace, and alternate styles:
-const INLINE_DEBT_REGEX = /(?:\/\/|#|--|\/\*)\s*@?(?:loseless|lossless):\s*\[?(?:ceiling:\s*)?([^\]\-\=\➔\n]+?)\]?\s*(?:->|=>|-->|➔)\s*\[?(?:upgrade:\s*)?([^\]\n\*\r]+?)\]?(?:\s*\*\/)?/i;
+// Resilient inline regex supporting hyphens, @loseless without colon, missing brackets, whitespace, and alternate styles:
+const INLINE_DEBT_REGEX = /(?:\/\/|#|--|\/\*\*?)\s*(?:@?(?:loseless|lossless):|@(?:loseless|lossless)\b)\s*\[?(?:ceiling:\s*)?([^\n]+?)\]?\s*(?:-->|->|=>|➔)\s*\[?(?:upgrade:\s*)?([^\]\n\*\r]+?)\]?(?:\s*\*\/)?\s*$/i;
 
 function walk(dir, results = []) {
   let list;
@@ -80,25 +83,27 @@ function scanFile(filePath, results) {
     const rawLine = lines[index];
     const trimmed = rawLine.trim();
 
-    // Check for JSDoc multiline blocks
-    if (trimmed.startsWith('/**')) {
+    // Check for multiline JSDoc blocks (single-line /** ... */ falls through to inline scanners)
+    if (trimmed.startsWith('/**') && !trimmed.includes('*/')) {
       inJsDoc = true;
       jsDocStartLine = index + 1;
       jsDocCeiling = null;
       jsDocUpgrade = null;
+      continue;
     }
 
     if (inJsDoc) {
-      const ceilingMatch = trimmed.match(/(?:\*|\/\/)?\s*ceiling:\s*\[?([^\]\r\n]+)\]?/i);
+      const sanitized = trimmed.split('*/')[0];
+      const ceilingMatch = sanitized.match(/(?:\*|\/\/)?\s*ceiling:\s*\[?([^\]\r\n]+)\]?/i);
       if (ceilingMatch && !jsDocCeiling) {
         jsDocCeiling = ceilingMatch[1].trim();
       }
-      const upgradeMatch = trimmed.match(/(?:\*|\/\/)?\s*upgrade:\s*\[?([^\]\r\n]+)\]?/i);
+      const upgradeMatch = sanitized.match(/(?:\*|\/\/)?\s*upgrade:\s*\[?([^\]\r\n]+)\]?/i);
       if (upgradeMatch && !jsDocUpgrade) {
         jsDocUpgrade = upgradeMatch[1].trim();
       }
 
-      if (trimmed.endsWith('*/')) {
+      if (trimmed.includes('*/')) {
         inJsDoc = false;
         if (jsDocCeiling && jsDocUpgrade) {
           results.push({
@@ -139,8 +144,8 @@ function scanFile(filePath, results) {
   }
 }
 
-function run() {
-  const targetDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
+function run(targetOverride = null) {
+  const targetDir = targetOverride ? path.resolve(targetOverride) : (process.argv[2] ? path.resolve(process.argv[2]) : process.cwd());
   console.log('\n=============================================================');
   console.log('            LOSELESS TECHNICAL DEBT SCANNER                  ');
   console.log('=============================================================');
@@ -172,4 +177,4 @@ if (require.main === module) {
   run();
 }
 
-module.exports = { walk, scanFile, DEBT_REGEX, INLINE_DEBT_REGEX };
+module.exports = { walk, scanFile, run, DEBT_REGEX, INLINE_DEBT_REGEX };

@@ -58,16 +58,19 @@ var tier2Patterns = []*regexp.Regexp{
 }
 
 // ClassifyTier determines the safety risk tier according to Loseless Tiered Risk Matrix.
-func ClassifyTier(symbol string, matchCount int) string {
+func ClassifyTier(symbol string, matchCount int, matchingFiles int) string {
 	for _, re := range tier2Patterns {
 		if re.MatchString(symbol) {
 			return "Tier 2 (Critical Invariant / Auth / Data / Concurrency)"
 		}
 	}
-	if matchCount > 5 {
-		return "Tier 1 (High Caller Distribution)"
+	if matchCount > 15 || matchingFiles > 5 {
+		return "Tier 2 (Systemic Impact / High Caller Fan-Out)"
 	}
-	return "Tier 0 (Scoped Component / Aesthetic)"
+	if matchCount > 2 || matchingFiles > 1 {
+		return "Tier 1 (Scoped / Multi-File Impact)"
+	}
+	return "Tier 0 (Localized Component / Aesthetic)"
 }
 
 // Scan traverses the directory tree concurrently using Goroutines to find all references to symbol.
@@ -75,7 +78,8 @@ func Scan(rootDir string, symbol string) (*Result, error) {
 	startTime := time.Now()
 
 	cleanSymbol := regexp.QuoteMeta(symbol)
-	symbolRegex, err := regexp.Compile(`\b` + cleanSymbol + `\b`)
+	// Non-alphanumeric RE2 boundaries ensure symbols prefixed with $ or @ ($state, @Directive) match accurately
+	symbolRegex, err := regexp.Compile(`(?:^|[^a-zA-Z0-9_])` + cleanSymbol + `(?:$|[^a-zA-Z0-9_])`)
 	if err != nil {
 		symbolRegex = regexp.MustCompile(cleanSymbol)
 	}
@@ -128,6 +132,7 @@ func Scan(rootDir string, symbol string) (*Result, error) {
 
 			count := 0
 			scanner := bufio.NewScanner(fileObj)
+			scanner.Buffer(make([]byte, 64*1024), 1024*1024)
 			for scanner.Scan() {
 				line := scanner.Text()
 				if symbolRegex.MatchString(line) {
@@ -151,7 +156,7 @@ func Scan(rootDir string, symbol string) (*Result, error) {
 
 	wg.Wait()
 	result.ElapsedMs = time.Since(startTime).Seconds() * 1000
-	result.Tier = ClassifyTier(symbol, result.TotalMatches)
+	result.Tier = ClassifyTier(symbol, result.TotalMatches, result.MatchingFiles)
 
 	return result, nil
 }
