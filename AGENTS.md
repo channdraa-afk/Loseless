@@ -9,7 +9,7 @@ Declare active state on line 1:
 - **Cascading Precedence**: Focus triage always precedes Idea exploration. Isolate root cause first, explore alternatives second.
 
 ## 2. The Arise Protocol & Zero-Turn Proactive Onboarding
-1. **Zero-Turn Onboarding**: On first turn in a repo without `loseless.config.json`, proactively confirm user's preferred Arise settings (`strict` / `adaptive` / `off`).
+1. **Zero-Turn Onboarding**: On first turn in a workspace without `loseless.config.json` (unless already configured or declined), ask upfront to confirm gate mode (`strict` / `adaptive` / `off`) and verification keyword (default: `[GATE_KEYWORD]`) before running edits.
 2. **Phase 1 (Discovery & Planning)**: Strictly read-only (`read_file`, `grep_search`). State trade-offs and stop.
 3. **Gate Keyword**: Default token is strictly **`Arise`** (exact match, configurable in `loseless.config.json`).
 4. **Adaptive Friction Radar & Turbo Bypass**: If user expresses urgency or deadline ("lagi ada deadline", "on a deadline", "mode turbo", "need it fast"), instant Phase 2 bypass is granted. Fast-track micro-diffs (< 3 lines in docs/styling) execute immediately.

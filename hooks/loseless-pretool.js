@@ -8,7 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { loadConfig, loadSession } = require('./loseless-mode-tracker');
+const { loadConfig, loadSession, readStdinPayload, resolveWorkspaceDir } = require('./loseless-mode-tracker');
 
 const BLOCKED_TOOLS = new Set([
   'write_file',
@@ -39,9 +39,10 @@ const SAFE_MICRO_EXTENSIONS = new Set([
   '.jpeg'
 ]);
 
-function checkToolAuthorization(toolName, targetFile) {
-  const config = loadConfig();
-  const session = loadSession();
+function checkToolAuthorization(toolName, targetFile, workspaceDir = null) {
+  const resolvedWorkspace = resolveWorkspaceDir(null, workspaceDir);
+  const config = loadConfig(resolvedWorkspace);
+  const session = loadSession(resolvedWorkspace);
 
   if (config.ariseMode === 'off' || session.bypassed) {
     return { allowed: true };
@@ -50,7 +51,7 @@ function checkToolAuthorization(toolName, targetFile) {
   // Fast-track micro diffs for non-code files (if configured)
   if (config.fastTrackMicroDiffs && targetFile) {
     // Canonical path normalization to neutralize relative traversal and slash discrepancies
-    const normalizedPath = path.resolve(process.cwd(), targetFile);
+    const normalizedPath = path.resolve(resolvedWorkspace, targetFile);
     const baseName = path.basename(normalizedPath).toLowerCase();
     const ext = path.extname(normalizedPath).toLowerCase();
 
@@ -75,30 +76,25 @@ function checkToolAuthorization(toolName, targetFile) {
 function readToolContext() {
   let toolName = process.argv[2] || process.env.TOOL_NAME || '';
   let targetFile = process.argv[3] || process.env.TARGET_FILE || '';
+  let workspaceDir = null;
 
-  if (!toolName && !process.stdin.isTTY) {
-    try {
-      const piped = fs.readFileSync(0, 'utf-8');
-      if (piped) {
-        try {
-          const json = JSON.parse(piped.replace(/^\uFEFF/, ''));
-          // Antigravity standard toolCall structure vs generic
-          toolName = json.toolCall?.name || json.tool || json.tool_name || json.name || '';
-          targetFile = json.toolCall?.args?.Path || json.toolCall?.args?.path || json.tool_input?.path || json.tool_input?.file_path || json.parameters?.path || json.parameters?.target || json.path || '';
-        } catch (e) {
-          toolName = piped.trim();
-        }
-      }
-    } catch (e) {}
+  const { raw, json } = toolName ? { raw: '', json: null } : readStdinPayload();
+  if (json) {
+    // Antigravity standard toolCall structure vs generic
+    toolName = json.toolCall?.name || json.tool || json.tool_name || json.name || '';
+    targetFile = json.toolCall?.args?.Path || json.toolCall?.args?.path || json.tool_input?.path || json.tool_input?.file_path || json.parameters?.path || json.parameters?.target || json.path || '';
+    workspaceDir = resolveWorkspaceDir(json, null);
+  } else if (!toolName && raw) {
+    toolName = raw.trim();
   }
 
-  return { toolName, targetFile };
+  return { toolName, targetFile, workspaceDir };
 }
 
 function run() {
-  const { toolName, targetFile } = readToolContext();
+  const { toolName, targetFile, workspaceDir } = readToolContext();
 
-  const check = checkToolAuthorization(toolName, targetFile);
+  const check = checkToolAuthorization(toolName, targetFile, workspaceDir);
   if (!check.allowed) {
     if (!process.stdout.isTTY) {
       process.stdout.write(JSON.stringify({

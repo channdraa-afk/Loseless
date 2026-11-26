@@ -1,6 +1,8 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { spawnSync } = require('child_process');
 
 // Isolate test session from active workspace so tests never pollute production state
 const testSessionDir = path.join(__dirname, '.temp-test-session');
@@ -164,5 +166,79 @@ try {
   }
   if (fs.existsSync(testSessionDir)) fs.rmdirSync(testSessionDir);
 } catch (e) {}
+
+// Test 15: Cross-workspace plugin isolation & SessionStart onboarding detection via stdin.cwd
+{
+  const tempRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'loseless-onboard-1-'));
+  try {
+    const childEnv = { ...process.env };
+    delete childEnv.LOSELESS_SESSION_DIR;
+    delete childEnv.LOSELESS_WORKSPACE_DIR;
+
+    const proc = spawnSync(process.execPath, [path.join(process.cwd(), 'hooks', 'loseless-activate.js')], {
+      cwd: process.cwd(), // Simulate plugin root which ALREADY has loseless.config.json
+      env: childEnv,
+      input: JSON.stringify({ cwd: tempRepo, workspacePaths: [tempRepo] }),
+      encoding: 'utf-8'
+    });
+
+    assert.strictEqual(proc.status, 0, 'loseless-activate.js subprocess must exit 0');
+    assert.ok(proc.stdout.includes('PROACTIVE_ONBOARDING_REQUIRED'), 'Missing loseless.config.json in stdin.cwd must trigger PROACTIVE_ONBOARDING_REQUIRED');
+    const createdSession = path.join(tempRepo, '.loseless', 'session.json');
+    assert.ok(fs.existsSync(createdSession), 'Session state must be isolated inside user workspaceDir, not plugin root');
+    const parsedSession = JSON.parse(fs.readFileSync(createdSession, 'utf-8'));
+    assert.strictEqual(parsedSession.phase, 1, 'New unconfigured workspace must initialize at Phase 1');
+    assert.strictEqual(parsedSession.onboardingPrompted, true, 'onboardingPrompted flag must be recorded');
+    console.log('  ✓ Cross-workspace SessionStart onboarding & stdin.cwd isolation verified');
+  } finally {
+    fs.rmSync(tempRepo, { recursive: true, force: true });
+  }
+}
+
+// Test 16: PreInvocation fallback onboarding triggers once when SessionStart did not fire
+{
+  const tempRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'loseless-onboard-2-'));
+  try {
+    const childEnv = { ...process.env };
+    delete childEnv.LOSELESS_SESSION_DIR;
+    delete childEnv.LOSELESS_WORKSPACE_DIR;
+
+    const turn1 = spawnSync(process.execPath, [path.join(process.cwd(), 'hooks', 'loseless-mode-tracker.js')], {
+      cwd: process.cwd(),
+      env: childEnv,
+      input: JSON.stringify({ cwd: tempRepo, lastUserInput: 'tolong rapikan kode php ini' }),
+      encoding: 'utf-8'
+    });
+    assert.strictEqual(turn1.status, 0);
+    assert.ok(turn1.stdout.includes('PROACTIVE_ONBOARDING_REQUIRED'), 'First PreInvocation turn in unconfigured repo must trigger onboarding directive');
+
+    const turn2 = spawnSync(process.execPath, [path.join(process.cwd(), 'hooks', 'loseless-mode-tracker.js')], {
+      cwd: process.cwd(),
+      env: childEnv,
+      input: JSON.stringify({ cwd: tempRepo, lastUserInput: 'lanjut cek auth' }),
+      encoding: 'utf-8'
+    });
+    assert.strictEqual(turn2.status, 0);
+    assert.strictEqual(turn2.stdout.trim(), '', 'Subsequent turn must not repeat onboarding directive spam');
+    console.log('  ✓ PreInvocation fallback onboarding triggers exactly once on unconfigured workspace');
+  } finally {
+    fs.rmSync(tempRepo, { recursive: true, force: true });
+  }
+}
+
+// Test 17: hooks.json PreToolUse matcher skips read-only tools and targets mutation tools
+{
+  const hooksJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'hooks.json'), 'utf-8'));
+  const matcherStr = hooksJson['loseless-gate'].PreToolUse[0].matcher;
+  assert.notStrictEqual(matcherStr, '*', 'PreToolUse matcher must never use blanket wildcard *');
+  const matcherRegex = new RegExp(`^(?:${matcherStr})$`);
+  assert.strictEqual(matcherRegex.test('read_file'), false, 'read_file must bypass PreToolUse hook');
+  assert.strictEqual(matcherRegex.test('grep_search'), false, 'grep_search must bypass PreToolUse hook');
+  assert.strictEqual(matcherRegex.test('list_dir'), false, 'list_dir must bypass PreToolUse hook');
+  assert.strictEqual(matcherRegex.test('write_file'), true, 'write_file must be intercepted by PreToolUse hook');
+  assert.strictEqual(matcherRegex.test('edit_file'), true, 'edit_file must be intercepted by PreToolUse hook');
+  assert.strictEqual(matcherRegex.test('run_command'), true, 'run_command must be intercepted by PreToolUse hook');
+  console.log('  ✓ hooks.json PreToolUse matcher targets mutation tools and exempts read-only tools');
+}
 
 console.log('All Physical Hooks Tests Passed Successfully.\n');

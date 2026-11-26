@@ -20,7 +20,50 @@ const DEFAULT_CONFIG = {
   cognitiveMode: "auto",
 };
 
-function getSessionFilePath() {
+function readStdinPayload() {
+  if (process.stdin.isTTY) return { raw: "", json: null };
+  try {
+    const piped = fs.readFileSync(0, "utf-8");
+    if (!piped) return { raw: "", json: null };
+    try {
+      const json = JSON.parse(piped.replace(/^\uFEFF/, ""));
+      return { raw: piped, json };
+    } catch (e) {
+      return { raw: piped, json: null };
+    }
+  } catch (e) {
+    return { raw: "", json: null };
+  }
+}
+
+function resolveWorkspaceDir(jsonPayload = null, overrideDir = null) {
+  let candidate =
+    overrideDir ||
+    process.env.LOSELESS_WORKSPACE_DIR ||
+    jsonPayload?.cwd ||
+    (Array.isArray(jsonPayload?.workspacePaths) && jsonPayload.workspacePaths[0]) ||
+    process.cwd();
+
+  if (typeof candidate === "string" && candidate.startsWith("file://")) {
+    try {
+      const { fileURLToPath } = require("url");
+      candidate = fileURLToPath(candidate);
+    } catch (e) {}
+  }
+  return path.resolve(String(candidate || process.cwd()));
+}
+
+function hasWorkspaceConfig(workspaceDir = null) {
+  const dir = resolveWorkspaceDir(null, workspaceDir);
+  return fs.existsSync(path.join(dir, "loseless.config.json"));
+}
+
+function buildOnboardingDirective(config, workspaceDir) {
+  const keyword = config.gateKeyword || "Arise";
+  return `\n[LOSELESS DIRECTIVE: PROACTIVE_ONBOARDING_REQUIRED]\nNo loseless.config.json detected in workspace (${workspaceDir}).\nMANDATORY FIRST ACTION: Before running file edits or tasks, ask the user to confirm: (1) Gate mode ('adaptive' / 'strict' / 'off'), and (2) Verification token (default: '${keyword}'). Offer to save loseless.config.json once confirmed.`;
+}
+
+function getSessionFilePath(workspaceDir = null) {
   if (process.env.LOSELESS_SESSION_DIR) {
     const dir = process.env.LOSELESS_SESSION_DIR;
     if (!fs.existsSync(dir)) {
@@ -31,36 +74,13 @@ function getSessionFilePath() {
     return path.join(dir, "session.json");
   }
 
-  const pluginSession = path.join(
-    path.resolve(__dirname, ".."),
-    ".loseless",
-    "session.json"
-  );
-  const cwdSession = path.join(process.cwd(), ".loseless", "session.json");
-
-  // If both exist, return the one updated most recently
-  if (fs.existsSync(cwdSession) && fs.existsSync(pluginSession) && cwdSession !== pluginSession) {
-    try {
-      const cwdMtime = fs.statSync(cwdSession).mtimeMs;
-      const pluginMtime = fs.statSync(pluginSession).mtimeMs;
-      return pluginMtime >= cwdMtime ? pluginSession : cwdSession;
-    } catch (e) {}
-  }
-
-  if (fs.existsSync(cwdSession)) return cwdSession;
-  if (fs.existsSync(pluginSession)) return pluginSession;
-
-  const defaultDir = path.join(process.cwd(), ".loseless");
-  if (!fs.existsSync(defaultDir)) {
-    try {
-      fs.mkdirSync(defaultDir, { recursive: true });
-    } catch (e) {}
-  }
-  return path.join(defaultDir, "session.json");
+  const targetDir = resolveWorkspaceDir(null, workspaceDir);
+  return path.join(targetDir, ".loseless", "session.json");
 }
 
-function loadConfig() {
-  const configPath = path.join(process.cwd(), "loseless.config.json");
+function loadConfig(workspaceDir = null) {
+  const targetDir = resolveWorkspaceDir(null, workspaceDir);
+  const configPath = path.join(targetDir, "loseless.config.json");
   if (fs.existsSync(configPath)) {
     try {
       const userConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -115,8 +135,8 @@ function atomicWriteFileSync(targetPath, content) {
   return false;
 }
 
-function loadSession() {
-  const filePath = getSessionFilePath();
+function loadSession(workspaceDir = null) {
+  const filePath = getSessionFilePath(workspaceDir);
   if (fs.existsSync(filePath)) {
     let raw = "";
     let attempts = 0;
@@ -142,7 +162,7 @@ function loadSession() {
         ) {
           data.phase = 1;
           data.bypassOffered = false;
-          saveSession(data);
+          saveSession(data, workspaceDir);
         }
         return data;
       } catch (parseErr) {
@@ -159,37 +179,27 @@ function loadSession() {
     phase: 1, // 1: Locked (Read-Only Planning), 2: Unlocked (Execution Allowed)
     bypassed: false,
     bypassOffered: false,
+    onboardingPrompted: false,
     lastKeyword: null,
     updatedAt: Date.now(),
   };
 }
 
-function saveSession(session) {
+function saveSession(session, workspaceDir = null) {
   try {
     session.updatedAt = Date.now();
-    const filePath = getSessionFilePath();
+    const filePath = getSessionFilePath(workspaceDir);
     const content = JSON.stringify(session, null, 2);
     atomicWriteFileSync(filePath, content);
-
-    // Mirror to sibling/parent session location if it exists to maintain cross-workspace sync
-    if (!process.env.LOSELESS_SESSION_DIR) {
-      const pluginSession = path.join(path.resolve(__dirname, ".."), ".loseless", "session.json");
-      const cwdSession = path.join(process.cwd(), ".loseless", "session.json");
-      if (filePath === pluginSession && fs.existsSync(path.dirname(cwdSession))) {
-        atomicWriteFileSync(cwdSession, content);
-      } else if (filePath === cwdSession && fs.existsSync(path.dirname(pluginSession))) {
-        atomicWriteFileSync(pluginSession, content);
-      }
-    }
   } catch (e) {}
 }
 
-function relockSession() {
-  const session = loadSession();
+function relockSession(workspaceDir = null) {
+  const session = loadSession(workspaceDir);
   session.phase = 1;
   session.bypassed = false;
   session.bypassOffered = false;
-  saveSession(session);
+  saveSession(session, workspaceDir);
   return session;
 }
 
@@ -203,11 +213,11 @@ function loadPatterns() {
   return {};
 }
 
-function analyzePrompt(promptText, configOverride = null) {
+function analyzePrompt(promptText, configOverride = null, workspaceDir = null) {
   if (!promptText || typeof promptText !== "string") return { action: "none" };
 
   const trimmed = promptText.trim();
-  const session = loadSession();
+  const session = loadSession(workspaceDir);
 
   // Ignore system notifications, background task messages, and IDE notices
   if (
@@ -219,7 +229,7 @@ function analyzePrompt(promptText, configOverride = null) {
     return { action: "none", phase: session.phase };
   }
 
-  const config = configOverride || loadConfig();
+  const config = configOverride || loadConfig(workspaceDir);
   const patterns = loadPatterns();
   const lower = trimmed.toLowerCase();
 
@@ -232,8 +242,9 @@ function analyzePrompt(promptText, configOverride = null) {
   if (isExactKeyword || isSealKeyword) {
     session.phase = 2;
     session.bypassed = false;
+    session.onboardingPrompted = true;
     session.lastKeyword = gateKeyword;
-    saveSession(session);
+    saveSession(session, workspaceDir);
     return {
       action: "unlocked",
       phase: 2,
@@ -247,7 +258,7 @@ function analyzePrompt(promptText, configOverride = null) {
     if (lower.includes(bypassWord)) {
       session.bypassed = true;
       session.phase = 2;
-      saveSession(session);
+      saveSession(session, workspaceDir);
       return {
         action: "bypass",
         phase: 2,
@@ -270,7 +281,7 @@ function analyzePrompt(promptText, configOverride = null) {
         (promptText.includes(pattern) && pattern === pattern.toUpperCase())
       ) {
         session.bypassOffered = true;
-        saveSession(session);
+        saveSession(session, workspaceDir);
         return {
           action: "frustration_detected",
           pattern,
@@ -287,7 +298,7 @@ function analyzePrompt(promptText, configOverride = null) {
       session.phase = 1;
       session.bypassed = false;
       session.bypassOffered = false;
-      saveSession(session);
+      saveSession(session, workspaceDir);
       return {
         action: "reconciled",
         phase: 1,
@@ -304,7 +315,7 @@ function analyzePrompt(promptText, configOverride = null) {
     session.bypassed = false;
     session.bypassOffered = false;
     session.lastKeyword = null;
-    saveSession(session);
+    saveSession(session, workspaceDir);
     return {
       action: "auto_relocked",
       phase: 1,
@@ -312,42 +323,66 @@ function analyzePrompt(promptText, configOverride = null) {
     };
   }
 
+  // 6. Fallback Zero-Turn Onboarding Guard when plugin is enabled mid-session without SessionStart
+  if (
+    !configOverride &&
+    config.ariseMode !== "off" &&
+    !hasWorkspaceConfig(workspaceDir) &&
+    !session.onboardingPrompted
+  ) {
+    session.onboardingPrompted = true;
+    saveSession(session, workspaceDir);
+    const resolvedDir = resolveWorkspaceDir(null, workspaceDir);
+    return {
+      action: "onboarding_required",
+      phase: session.phase,
+      message: `[Loseless] Active in unconfigured workspace.${buildOnboardingDirective(config, resolvedDir)}`,
+    };
+  }
+
   return { action: "none", phase: session.phase };
 }
 
-function readInputFromEnvironment() {
+function readInputContext() {
   if (process.argv[2]) {
-    return process.argv.slice(2).join(" ");
+    return {
+      promptInput: process.argv.slice(2).join(" "),
+      workspaceDir: resolveWorkspaceDir(null, null),
+    };
   }
   if (process.env.USER_PROMPT) {
-    return process.env.USER_PROMPT;
+    return {
+      promptInput: process.env.USER_PROMPT,
+      workspaceDir: resolveWorkspaceDir(null, null),
+    };
   }
-  if (!process.stdin.isTTY) {
-    try {
-      const piped = fs.readFileSync(0, "utf-8");
-      if (piped) {
-        try {
-          const json = JSON.parse(piped.replace(/^\uFEFF/, ""));
-          return (
-            json.lastUserInput ||
-            json.prompt ||
-            json.text ||
-            json.input ||
-            json.message ||
-            piped
-          );
-        } catch (e) {
-          return piped.trim();
-        }
-      }
-    } catch (e) {}
+  const { raw, json } = readStdinPayload();
+  if (json) {
+    const promptInput =
+      json.lastUserInput ||
+      json.prompt ||
+      json.text ||
+      json.input ||
+      json.message ||
+      raw;
+    return {
+      promptInput,
+      workspaceDir: resolveWorkspaceDir(json, null),
+    };
   }
-  return "";
+  return {
+    promptInput: raw ? raw.trim() : "",
+    workspaceDir: resolveWorkspaceDir(null, null),
+  };
+}
+
+function readInputFromEnvironment() {
+  return readInputContext().promptInput;
 }
 
 function run() {
-  const promptInput = readInputFromEnvironment();
-  const result = analyzePrompt(promptInput);
+  const { promptInput, workspaceDir } = readInputContext();
+  const result = analyzePrompt(promptInput, null, workspaceDir);
   if (result.message) {
     if (process.stdout.isTTY) {
       console.log(result.message);
@@ -378,4 +413,8 @@ module.exports = {
   relockSession,
   getSessionFilePath,
   readInputFromEnvironment,
+  readStdinPayload,
+  resolveWorkspaceDir,
+  hasWorkspaceConfig,
+  buildOnboardingDirective,
 };

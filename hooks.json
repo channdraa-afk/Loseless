@@ -20,7 +20,7 @@
   "loseless-gate": {
     "PreToolUse": [
       {
-        "matcher": "*",
+        "matcher": "write_file|edit_file|replace_file_content|write_to_file|apply_diff|insert_content|patch|delete_file|remove_file|create_file|multi_edit|MultiEdit|NotebookEdit|Edit|Write|run_command|bash|Bash|execute_command|run_terminal_cmd",
         "hooks": [
           {
             "type": "command",
